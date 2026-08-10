@@ -1,6 +1,6 @@
 ---
 name: python-comments
-description: Google Python Style Guide rules for writing and reviewing comments and docstrings — module/class/function docstrings with Args/Returns/Raises sections, block and inline comments, TODO format, and what NOT to comment. Supports two comment-complexity tiers, chosen by a "CC1" or "CC2" marker in the user's prompt — CC1 (concise, at most 2–3 sentences per comment or docstring prose) is the default; CC2 is full detail. Use this skill whenever you write, generate, or modify Python code (.py, .pyi, notebooks), whenever you are asked to add, improve, translate, audit, or review comments, docstrings, or documentation in Python code, and whenever a Python review touches comment or docstring quality — even if the user never says "Google style" or "docstring convention" and even for a small edit to a single function.
+description: Google Python Style Guide rules for writing and reviewing comments and docstrings — module/class/function docstrings with Args/Returns/Raises sections, block and inline comments, TODO format, the professional register comments are written in (no filler, hedging, chattiness, or cutesy phrasing), and what NOT to comment. Optimizes for information density: comment and docstring prose is capped at 2–3 sentences, structured entries at one sentence each, with no usage-example blocks. Use this skill whenever you write, generate, or modify Python code (.py, .pyi, notebooks), whenever you are asked to add, improve, shorten, translate, audit, review, or make more professional the comments, docstrings, or documentation in Python code, and whenever a Python review touches comment or docstring quality — even if the user never says "Google style" or "docstring convention" and even for a small edit to a single function.
 ---
 
 # Writing Python comments and docstrings (Google style)
@@ -16,40 +16,75 @@ Two failure modes, and the second is the dangerous one:
 - **Over-commenting** — restating code in prose. Adds noise, and trains readers to skip comments.
 - **Stale comments** — worse than no comment, because the reader trusts them. Any time you change behavior, the docstrings and comments describing that behavior are part of the change.
 
-## Comment complexity tiers: CC1 and CC2
+## The budget
 
-Before writing anything, check the user's prompt for a tier marker:
+Documentation is measured by **facts per word**: how much a reader could not have recovered from the code, divided by the words you spent saying it. Maximize that ratio. A codebase where every function carries a paragraph trains readers to skim past docstrings, which is the same failure as documenting nothing.
 
-- **CC1 — concise. This is the default**, applying both when the prompt says "CC1" and when it names no tier at all.
-- **CC2 — full detail.** Applies only when the prompt explicitly says "CC2". Under CC2, follow the rest of this skill as written, with no length cap.
-
-CC1 exists to prevent over-documentation: a codebase where every function carries a paragraph of prose trains readers to skim past docstrings, which is the same failure as documenting nothing. Under CC1:
+The budget, which applies to everything you write:
 
 - Each block or inline comment, and the free prose of each docstring (summary line plus any expanded description), is capped at **2–3 sentences**. Prefer a one-line docstring whenever the summary sentence already covers the contract.
-- Structured sections (`Args:`, `Returns:`, `Raises:`, `Attributes:`) survive when they carry contract information the signature doesn't, but each entry shrinks to one short sentence. Drop usage-example blocks and example return values.
-- *What* to document does not change — parameter meaning, sentinel returns, escaping exceptions, and side effects are still the content. The cap changes *how much*: keep only the facts a caller would guess wrong, and cut everything the code or annotations already say.
-- If a contract genuinely cannot fit in the budget (rare, and usually a sign the function does too much), keep the extra sentence rather than drop a load-bearing fact — the cap is a budget, not a license to ship an incomplete contract.
+- Structured sections (`Args:`, `Returns:`, `Raises:`, `Attributes:`) survive when they carry contract information the signature doesn't, but each entry is one short sentence.
+- **No usage-example blocks and no example return values.** They are the most expensive words in a docstring: many lines for one fact a reader can get from a call site or a test.
+- *What* to document does not change — parameter meaning, sentinel returns, escaping exceptions, and side effects are still the content. The budget changes *how much*: keep only the facts a caller would guess wrong, and cut everything the code or annotations already say.
+- If a contract genuinely cannot fit (rare, and usually a sign the function does too much), keep the extra sentence rather than drop a load-bearing fact. The cap is a budget, not a license to ship an incomplete contract.
 
-For example, the `fetch_smalltable_rows` docstring shown later in this skill compresses under CC1 to:
+The way to hit the budget is not to drop facts, it is to stop spending words on non-facts. Before you finish, reread what you wrote and ask of each sentence: *which fact is this carrying?* If the answer is "none" or "the same one as the sentence above", delete it.
+
+## Register: how a comment should sound
+
+Professional, concise, crisp — the register of a competent colleague explaining a contract in a design review. State the fact and stop. Every word either carries information or costs the reader time.
+
+Four rules do most of the work:
+
+1. **One fact per sentence, stated directly.** Lead with the fact, not with throat-clearing. "Note that callers should be aware this may block." → "Blocks until the queue drains."
+2. **Declarative third person, present tense, active voice.** Document the code, not the reader's experience of it: "Returns None on timeout", not "You'll get back None" or "We then return None".
+3. **Precise words instead of emphatic ones.** Intensifiers ("very", "extremely", "super"), vague scale words ("a lot", "huge"), and self-praise ("elegant", "clever trick") carry nothing. If something is expensive, say how: "O(n) in the number of sessions", not "quite slow".
+4. **Name things exactly as the code names them,** in backticks. A synonym invented for a symbol forces the reader to map it back.
+
+Delete these on sight:
+
+| Kind | Examples | Why |
+|---|---|---|
+| Filler openers | "Basically", "Essentially", "Actually", "Of course", "Note that", "It should be noted that", "As you can see", "Simply", "Just" | Zero information; the sentence is stronger without them |
+| Hedges | "should probably", "kind of", "sort of", "I think", "for some reason" | Either you know the contract or you must go find out. Genuine unresolved uncertainty belongs in a `TODO:`, not in a shrug |
+| Reader address, chattiness | "you", "your", "we'll", "let's", "don't worry", "feel free", "as promised" | A docstring is documentation, not a conversation |
+| Cutesy or hyped vocabulary | "magic", "secret sauce", "bad boy", "sprinkle in", "awesome", "nifty", "boom", "voilà" | Reads as unserious in review and ages badly |
+| Anthropomorphism | "the queue is happy to accept", "the parser wants a token", "asks the server nicely" | Obscures the mechanism it is supposed to explain |
+| Emotive punctuation, decoration | `!`, `?!`, emoji, `====` banners, ALL-CAPS for emphasis, `*bold*` | Noise. The only conventional shouty tokens are `TODO:`, `NOTE:`, `WARNING:` |
+| Meta-commentary on the code's quality | "this is ugly but it works", "sorry about this", "hacky" | Either fix it or write a `TODO:` naming what would fix it |
+| Restating the construct | "This function ...", "This class is a class that ...", "This method is used to ..." | The reader can see what it is; start with the verb |
+
+Before and after — same facts, professional register:
 
 ```python
-    """Fetches rows for `keys` from a Smalltable, as a dict of key to row tuple.
+    """This is a helper that basically just goes and grabs the rows for you!
 
-    Args:
-        table_handle: An open smalltable.Table instance.
-        keys: Keys of the rows to fetch; string keys are UTF-8 encoded.
-        require_all_keys: If True, only rows with values set for all keys are returned.
-
-    Returns:
-        A dict mapping each found key (always bytes) to its row, a tuple of
-        strings; missing rows are absent from the dict.
-
-    Raises:
-        IOError: An error occurred accessing the smalltable.
+    It's super fast, so don't worry about hitting it in a loop :)
     """
 ```
 
-Every contract fact survives; the example table and restatements are gone.
+```python
+    """Fetches rows for `keys`, serving hits from the process-local cache.
+
+    Uncached keys cost one RPC each; batch them rather than looping.
+    """
+```
+
+```python
+    # Okay so this is a bit of a hack, but we basically just need to make
+    # sure the poor task doesn't get retried forever!
+    if task.attempts >= self._max_attempts:
+```
+
+```python
+    # Dropping here rather than at the next dequeue keeps `_pending`
+    # bounded when a caller never drains the queue.
+    if task.attempts >= self._max_attempts:
+```
+
+**Mechanics.** Comments are read far more often than written. Complete sentences — capitalized, properly punctuated — read better than fragments. Short end-of-line comments may be terser, but stay consistent within a file. When the file's comments are in another language, the register rules above still apply: the same ban on filler, hedging, cuteness, and sentence-ending particles or emoticons.
+
+**The sound check.** Read the comment as if saying it aloud in a code review. Anything you would not say there — a joke, an apology, an exclamation, a pep talk — does not belong in the file either.
 
 ## Where each kind of information lives
 
@@ -80,20 +115,13 @@ The docstring documents the *interface* — calling syntax and semantics, enough
 
 Start each file with the project's license boilerplate — copy the header from a neighboring file rather than inventing one.
 
-Every module gets a docstring describing its contents and usage. A typical-usage example is often worth more than prose:
+Every module gets a docstring: a one-line summary, plus — only when the summary leaves something a reader must know before using the module — one or two sentences carrying that constraint. What earns the space is the fact a caller would otherwise discover the hard way: that state is process-local, that nothing is thread-safe, that expiry is lazy. Not a tour of the exports, and not a usage example.
 
 ```python
-"""A one-line summary of the module, terminated by a period.
+"""In-memory session store with lazy TTL expiry.
 
-Leave one blank line. The rest of this docstring should contain an
-overall description of the module or program. Optionally, it may also
-contain a brief description of exported classes and functions and/or usage
-examples.
-
-Typical usage example:
-
-  foo = ClassFoo()
-  bar = foo.function_bar()
+Entries expire `ttl` seconds after `put()` and are evicted on read or by
+`purge()`. Not thread-safe.
 """
 ```
 
@@ -111,35 +139,23 @@ def fetch_smalltable_rows(
     keys: Sequence[bytes | str],
     require_all_keys: bool = False,
 ) -> Mapping[bytes, tuple[str, ...]]:
-    """Fetches rows from a Smalltable.
-
-    Retrieves rows pertaining to the given keys from the Table instance
-    represented by table_handle.  String keys will be UTF-8 encoded.
+    """Fetches rows for `keys` from a Smalltable, as a dict of key to row tuple.
 
     Args:
         table_handle: An open smalltable.Table instance.
-        keys: A sequence of strings representing the key of each table
-          row to fetch.  String keys will be UTF-8 encoded.
-        require_all_keys: If True only rows with values set for all keys
-          will be returned.
+        keys: Keys of the rows to fetch; string keys are UTF-8 encoded.
+        require_all_keys: If True, only rows with values set for all keys are returned.
 
     Returns:
-        A dict mapping keys to the corresponding table row data
-        fetched. Each row is represented as a tuple of strings. For
-        example:
-
-        {b'Serak': ('Rigel VII', 'Preparer'),
-         b'Zim': ('Irk', 'Invader'),
-         b'Lrrr': ('Omicron Persei 8', 'Emperor')}
-
-        Returned keys are always bytes.  If a key from the keys argument is
-        missing from the dictionary, then that row was not found in the
-        table (and require_all_keys must have been False).
+        A dict mapping each found key (always bytes) to its row, a tuple of
+        strings; missing rows are absent from the dict.
 
     Raises:
         IOError: An error occurred accessing the smalltable.
     """
 ```
+
+Every fact a caller needs is there — the UTF-8 encoding, the `require_all_keys` filter, the bytes keys, the missing-row behavior, the escaping exception — in nine lines. An expanded description that restated the summary, and a worked example of the return value, would have tripled the length and added nothing.
 
 ### `Args:`
 
@@ -199,10 +215,6 @@ Never describe what the code literally does — assume the reader knows Python b
 # the next element is i+1
 ```
 
-## Punctuation, spelling, grammar
-
-Comments are read far more often than they are written, so mind the mechanics. Complete sentences — capitalized, properly punctuated — read better than fragments. Short end-of-line comments can be less formal, but stay consistent within a file.
-
 ## TODO comments
 
 Use `TODO` for code that is temporary, a short-term solution, or good-enough-but-not-perfect. Format: uppercase `TODO`, a reference where the reader can find context — a bug link, a username — then a colon and an explanation:
@@ -224,4 +236,6 @@ The name or bug you cite is *where to find context*, not who has been assigned t
 
 When the task is auditing rather than writing — "check the docstrings in this file", "improve the docs on this module", "review this PR's comments" — read `references/review-checklist.md` for the pass order and the findings format. Work from most-harmful to least: docstrings that are now false, then missing contracts, then structure violations, then noise.
 
-The complexity tier applies to audits too: under CC1 (the default), a docstring or comment that is correct but runs past its 2–3 sentence budget is itself a finding — trim it to its load-bearing sentences. Under CC2, length alone is never a finding.
+Register is part of the audit: filler, hedging, chattiness, cuteness, exclamation marks, and meta-commentary are findings wherever they appear, and the fix is a rewrite that keeps the facts and drops the words around them.
+
+So is the budget. A docstring or comment that is correct but runs past its 2–3 sentence budget is itself a finding — trim it to its load-bearing sentences — and so is a usage-example block, an example return value, or any sentence that carries no fact the sentence before it did not.

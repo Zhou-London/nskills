@@ -1,27 +1,34 @@
 {
   "skill_name": "cpp-comments",
   "skill_path": "/Users/zhou/.claude/skills/cpp-comments/SKILL.md",
+  "cases": {
+    "existing-code": "Documenting code that already exists — the agent is handed an undocumented file and must fit comments to it.",
+    "new-code": "Documenting code as it is written — the agent designs a new module and documents it in the same pass."
+  },
   "evals": [
     {
       "id": 3,
+      "case": "existing-code",
       "eval_name": "add-comments-cpp",
       "prompt": "Add comments to retry_queue.h and retry_queue.cc: the class, the functions, and the member variables all need appropriate comments. Modify the files directly.",
       "expected_output": "Contract comments live at the declarations in the .h (third-person declarative); the .cc only explains implementation choices and does not duplicate the header comments. Ownership of the raw payload pointer, NextReadyAt's -1.0 sentinel, MarkFailed's nullopt ambiguity (unknown id vs dropped task), and the units of base_delay_s_ are all documented. No Author: lines, no comments that restate the code.",
       "files": ["evals/files/retry_queue.h", "evals/files/retry_queue.cc"]
     },
     {
-      "id": 4,
-      "eval_name": "audit-comments-cpp",
-      "prompt": "Review the comment quality of session_store.h and session_store.cc. Write a report listing every problem you find, ordered by severity. Do not change the code yet.",
-      "expected_output": "Report ordered by harm: first the comment/behavior contradictions (Get() claims to return an empty string but throws out_of_range; a nonexistent timeout_s parameter is documented), then missing contracts (the negative-ttl never-expires sentinel, Get()'s evict-on-read side effect), then placement problems (.h comment duplicated into the .cc), and finally noise (Author: line, restating comments, commented-out code, malformed TODO, wrong /* notify */ argument-comment form, imperative mood).",
-      "files": ["evals/files/session_store.h", "evals/files/session_store.cc"]
-    },
-    {
       "id": 5,
+      "case": "new-code",
       "eval_name": "generate-module-cpp",
       "prompt": "Write a C++ token-bucket rate limiter: rate_limiter.h and rate_limiter.cc, with a TokenBucket class supporting a blocking Acquire(n) and a non-blocking TryAcquire(n). Comments must be complete.",
       "expected_output": "The class comment states the purpose and the thread-safety guarantee; every public method declaration in the .h carries a third-person contract comment (blocking semantics, timeout, return-value meaning, units); .cc comments explain implementation rationale only; no restating comments; any bare literal argument uses the /*param=*/ form.",
       "files": []
+    }
+  ],
+  "retired_evals": [
+    {
+      "id": 4,
+      "eval_name": "audit-comments-cpp",
+      "retired_in": "iteration-4",
+      "reason": "Slowest and most expensive eval (report prose ran 1.7-2.7k words per run) and the weakest signal: every configuration passed every assertion in iteration-3, and report prose scored 1.5-2.0 SD against 4.4-7.5 for code, so it could not share a threshold. Runs through iteration-3 are kept as history."
     }
   ]
 }

@@ -1,27 +1,34 @@
 {
   "skill_name": "python-comments",
   "skill_path": "/Users/zhou/.claude/skills/python-comments/SKILL.md",
+  "cases": {
+    "existing-code": "Documenting code that already exists — the agent is handed an undocumented file and must fit comments to it.",
+    "new-code": "Documenting code as it is written — the agent designs a new module and documents it in the same pass."
+  },
   "evals": [
     {
       "id": 0,
+      "case": "existing-code",
       "eval_name": "add-docstrings",
       "prompt": "Add documentation to retry_queue.py: the module, the class, and every method need proper docstrings, plus comments where warranted. Modify the file directly.",
       "expected_output": "retry_queue.py gains Google-style docstrings: triple double quotes, descriptive first lines, Args/Returns/Raises/Yields sections; the -1.0 sentinel of next_ready_at, mark_failed's KeyError and None semantics, and drain_ready's Yields are all documented; no comments that merely restate the code.",
       "files": ["evals/files/retry_queue.py"]
     },
     {
-      "id": 1,
-      "eval_name": "audit-comments",
-      "prompt": "Review the comment and docstring quality of session_store.py. Write a report listing every problem you find, ordered by severity. Do not change the code yet.",
-      "expected_output": "Report ordered by harm: first the docstring/behavior contradictions (get() claims to return None but raises KeyError; put() documents a nonexistent timeout parameter), then missing contract information, and only then formatting noise (''' quotes, 'Arguments:' section name, imperative mood, restating comments, malformed TODO, commented-out code, generator documented with Returns:).",
-      "files": ["evals/files/session_store.py"]
-    },
-    {
       "id": 2,
+      "case": "new-code",
       "eval_name": "generate-module",
       "prompt": "Write a rate_limiter.py implementing a token-bucket rate limiter class TokenBucket, with a blocking acquire(n) and a non-blocking try_acquire(n). It must be fully documented.",
       "expected_output": "The new module carries a module docstring (with a usage example), a class docstring (with Attributes:), and method docstrings (Args/Returns/Raises), all in triple double quotes with descriptive one-sentence first lines.",
       "files": []
+    }
+  ],
+  "retired_evals": [
+    {
+      "id": 1,
+      "eval_name": "audit-comments",
+      "retired_in": "iteration-4",
+      "reason": "Slowest and most expensive eval (report prose ran 1.7-2.9k words per run) and the weakest signal: every configuration passed nearly every assertion from iteration-2 on, and report prose scored 1.2-2.8 SD against 4.4-7.7 for code, so it could not share a threshold. Runs through iteration-3 are kept as history."
     }
   ]
 }

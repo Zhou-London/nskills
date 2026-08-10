@@ -37,7 +37,36 @@ export interface FileData {
   path: string;
 }
 
+/** Semantic density and register for one output file (from metrics.json). */
+export interface FileMetric {
+  name: string;
+  commentWords: number;
+  /** Facts a reader could not recover from the code; null until graded. */
+  semanticUnits: number | null;
+  /** semanticUnits / commentWords x 100. */
+  density: number | null;
+  lintHits: number;
+}
+
+/** Run-level roll-up of rubrics/semantic-density.md. */
+export interface RunMetrics {
+  words: number;
+  units: number | null;
+  density: number | null;
+  /** Register score, 0-5; null until graded. */
+  tone: number | null;
+  lintHits: number;
+  lintHard: number;
+  files: Record<string, FileMetric>;
+}
+
 export interface RunData {
+  /**
+   * False between the two phases of a round: the run has produced its outputs
+   * but has not been graded yet, so its assertions and metrics are empty and
+   * every pass-rate roll-up must exclude it.
+   */
+  scored: boolean;
   assertions: Assertion[];
   passed: number;
   total: number;
@@ -46,6 +75,7 @@ export interface RunData {
   /** Absolute path of the run's outputs/ directory. */
   outputsDir: string;
   outputs: FileData[];
+  metrics: RunMetrics | null;
 }
 
 export interface EvalData {
@@ -64,9 +94,11 @@ export interface EvalData {
 export interface SkillData {
   name: string;
   description: string;
-  iteration: number;
   evals: EvalData[];
   notes: string[];
+  /** Runs present in this iteration, and how many have been graded. */
+  runs: number;
+  scoredRuns: number;
 }
 
 function readJson(p: string): any | null {
@@ -107,14 +139,8 @@ export function isSkill(name: string): boolean {
   return /^[a-z0-9-]+$/.test(name) && listSkillNames().includes(name);
 }
 
-function latestIteration(skillDir: string): number {
-  let best = 0;
-  for (const e of fs.readdirSync(skillDir)) {
-    const m = e.match(/^iteration-(\d+)$/);
-    if (m) best = Math.max(best, parseInt(m[1], 10));
-  }
-  return best;
-}
+/** Where a skill's single set of run results lives. */
+export const RESULTS_DIR = "results";
 
 /** One-line description pulled from the skill's SKILL.md frontmatter. */
 function skillDescription(evalsJson: any): string {
@@ -130,18 +156,41 @@ function skillDescription(evalsJson: any): string {
     : firstSentence;
 }
 
+function loadMetrics(runDir: string): RunMetrics | null {
+  const m = readJson(path.join(runDir, "metrics.json"));
+  if (!m) return null;
+  const files: Record<string, FileMetric> = {};
+  for (const f of m.files || []) {
+    files[String(f.name)] = {
+      name: String(f.name),
+      commentWords: Number(f.comment_words ?? 0),
+      semanticUnits: f.semantic_units ?? null,
+      density: f.density ?? null,
+      lintHits: Number(f.lint?.hits ?? 0),
+    };
+  }
+  return {
+    words: Number(m.totals?.comment_words ?? 0),
+    units: m.totals?.semantic_units ?? null,
+    density: m.totals?.density ?? null,
+    tone: m.tone?.score ?? null,
+    lintHits: Number(m.tone?.lint_hits ?? 0),
+    lintHard: Number(m.tone?.lint_hard_hits ?? 0),
+    files,
+  };
+}
+
 function loadRun(evalDir: string, config: ConfigName): RunData | null {
-  const runDir = path.join(evalDir, config, "run-1");
+  const runDir = path.join(evalDir, config);
+  const outDir = path.join(runDir, "outputs");
   const grading = readJson(path.join(runDir, "grading.json"));
-  if (!grading) return null;
-  const assertions: Assertion[] = (grading.expectations || []).map((e: any) => ({
+  const assertions: Assertion[] = (grading?.expectations || []).map((e: any) => ({
     text: String(e.text ?? ""),
     passed: Boolean(e.passed),
     evidence: String(e.evidence ?? ""),
   }));
   const timing = readJson(path.join(runDir, "timing.json"));
   const outputs: FileData[] = [];
-  const outDir = path.join(runDir, "outputs");
   if (fs.existsSync(outDir)) {
     for (const f of fs.readdirSync(outDir).sort()) {
       const fp = path.join(outDir, f);
@@ -150,15 +199,20 @@ function loadRun(evalDir: string, config: ConfigName): RunData | null {
       }
     }
   }
+  // A run with outputs but no grading.json is phase-1 work awaiting review; an
+  // empty outputs/ is just the scaffolding for a round that has not run yet.
+  if (!grading && outputs.length === 0) return null;
   return {
+    scored: Boolean(grading),
     assertions,
     passed:
-      grading.summary?.passed ?? assertions.filter((a) => a.passed).length,
-    total: grading.summary?.total ?? assertions.length,
+      grading?.summary?.passed ?? assertions.filter((a) => a.passed).length,
+    total: grading?.summary?.total ?? assertions.length,
     tokens: timing?.total_tokens ?? null,
     seconds: timing?.total_duration_seconds ?? null,
     outputsDir: outDir,
     outputs,
+    metrics: loadMetrics(runDir),
   };
 }
 
@@ -177,16 +231,15 @@ export function getSkillData(name: string): SkillData | null {
   if (!isSkill(name)) return null;
   const skillDir = path.join(WORKSPACE, name);
   const evalsJson = readJson(path.join(skillDir, "evals", "evals.json"));
-  const iteration = latestIteration(skillDir);
-  const iterDir = path.join(skillDir, `iteration-${iteration}`);
+  const resultsDir = path.join(skillDir, RESULTS_DIR);
   const evals: EvalData[] = [];
-  if (iteration > 0) {
+  if (fs.existsSync(resultsDir)) {
     const dirs = fs
-      .readdirSync(iterDir)
+      .readdirSync(resultsDir)
       .filter((d) => d.startsWith("eval-"))
       .sort();
     for (const d of dirs) {
-      const evalDir = path.join(iterDir, d);
+      const evalDir = path.join(resultsDir, d);
       const meta = readJson(path.join(evalDir, "eval_metadata.json")) || {};
       const fromEvalsJson = (evalsJson?.evals || []).find(
         (e: any) => e.id === meta.eval_id
@@ -210,13 +263,24 @@ export function getSkillData(name: string): SkillData | null {
       });
     }
   }
-  const benchmark = readJson(path.join(iterDir, "benchmark.json"));
+  const benchmark = readJson(path.join(resultsDir, "benchmark.json"));
+  let runs = 0;
+  let scoredRuns = 0;
+  for (const e of evals) {
+    for (const c of CONFIGS) {
+      const r = e.configs[c];
+      if (!r) continue;
+      runs++;
+      if (r.scored) scoredRuns++;
+    }
+  }
   return {
     name,
     description: skillDescription(evalsJson),
-    iteration,
     evals,
     notes: Array.isArray(benchmark?.notes) ? benchmark.notes : [],
+    runs,
+    scoredRuns,
   };
 }
 
@@ -225,6 +289,55 @@ export interface ConfigTotals {
   total: number;
   tokens: number;
   seconds: number;
+}
+
+export interface MetricTotals {
+  words: number;
+  units: number | null;
+  /** Pooled density: total units over total words, not a mean of means. */
+  density: number | null;
+  /** Mean register score over the graded runs. */
+  tone: number | null;
+  lintHard: number;
+  /** Runs that have a judged unit count, out of the runs present. */
+  graded: number;
+  runs: number;
+}
+
+export function metricTotals(
+  skill: SkillData,
+  config: ConfigName
+): MetricTotals {
+  let words = 0;
+  let units = 0;
+  let graded = 0;
+  let runs = 0;
+  let lintHard = 0;
+  let toneSum = 0;
+  let toneN = 0;
+  for (const e of skill.evals) {
+    const m = e.configs[config]?.metrics;
+    if (!m) continue;
+    runs++;
+    lintHard += m.lintHard;
+    if (m.tone !== null) {
+      toneSum += m.tone;
+      toneN++;
+    }
+    if (m.units === null) continue;
+    graded++;
+    words += m.words;
+    units += m.units;
+  }
+  return {
+    words,
+    units: graded > 0 ? units : null,
+    density: graded > 0 && words > 0 ? Math.round((units / words) * 1000) / 10 : null,
+    tone: toneN > 0 ? Math.round((toneSum / toneN) * 10) / 10 : null,
+    lintHard,
+    graded,
+    runs,
+  };
 }
 
 export function configTotals(

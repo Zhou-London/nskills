@@ -39,7 +39,7 @@ export interface CommentStats {
   lines: number;
   commentLines: number;
   codeLines: number;
-  /** Whitespace-separated words of comment prose, markers stripped. */
+  /** Words of comment prose, markers and a leading license header stripped. */
   words: number;
   /** commentLines / (commentLines + codeLines), as a percentage. */
   density: number;
@@ -128,15 +128,28 @@ export function analyze(content: string, lang: Lang): CodeLine[] {
 }
 
 const MARKERS = /^[\s/*#"']+|[\s/*"']+$/g;
+const CJK = /[㐀-䶿一-鿿豈-﫿぀-ヿ]/g;
+const LICENSE =
+  /(copyright|licensed under|license at|WITHOUT WARRANTIES|SPDX-|apache\.org\/licenses|all rights reserved)/i;
 
-/** Comment volume of an analyzed file — the headline number per column. */
-export function statsOf(lines: CodeLine[]): CommentStats {
-  let commentLines = 0;
-  let codeLines = 0;
-  let words = 0;
+/**
+ * Words of prose, counting each CJK character as one word.
+ *
+ * Whitespace splitting alone scores a 40-character Chinese sentence as one
+ * word, which would make densities incomparable across languages (they are
+ * only really comparable *within* one language even so). Mirrored exactly by
+ * scripts/metrics.py, which is what writes the recorded density.
+ */
+export function countWords(text: string): number {
+  const cjk = text.match(CJK)?.length ?? 0;
+  const latin = text.replace(CJK, " ").split(/\s+/).filter(Boolean).length;
+  return cjk + latin;
+}
+
+/** Comment prose per line, with a leading license header dropped. */
+function proseLines(lines: CodeLine[]): { n: number; text: string }[] {
+  const out: { n: number; text: string }[] = [];
   for (const l of lines) {
-    if (l.hasComment) commentLines++;
-    if (l.hasCode) codeLines++;
     if (!l.hasComment) continue;
     const prose = l.segs
       .filter((s) => s.c)
@@ -144,8 +157,27 @@ export function statsOf(lines: CodeLine[]): CommentStats {
       .join("")
       .replace(MARKERS, "")
       .trim();
-    if (prose) words += prose.split(/\s+/).length;
+    if (prose) out.push({ n: l.n, text: prose });
   }
+  // Both skills tell the agent to copy the project's license boilerplate from a
+  // neighbouring file, so those ~120 words are not the run's own prose and must
+  // not dilute its density.
+  if (out.length === 0 || out[0].n > 6) return out;
+  let end = 0;
+  while (end + 1 < out.length && out[end + 1].n <= out[end].n + 2) end++;
+  const block = out.slice(0, end + 1);
+  return block.some((l) => LICENSE.test(l.text)) ? out.slice(end + 1) : out;
+}
+
+/** Comment volume of an analyzed file — the headline number per column. */
+export function statsOf(lines: CodeLine[]): CommentStats {
+  let commentLines = 0;
+  let codeLines = 0;
+  for (const l of lines) {
+    if (l.hasComment) commentLines++;
+    if (l.hasCode) codeLines++;
+  }
+  const words = proseLines(lines).reduce((n, l) => n + countWords(l.text), 0);
   const denom = commentLines + codeLines;
   return {
     lines: lines.length,

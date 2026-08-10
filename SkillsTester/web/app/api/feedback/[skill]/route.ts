@@ -1,7 +1,7 @@
 import fs from "fs";
 import path from "path";
 import { NextResponse } from "next/server";
-import { WORKSPACE, isSkill, getSkillData } from "@/lib/data";
+import { WORKSPACE, RESULTS_DIR, isSkill, getSkillData } from "@/lib/data";
 
 export async function POST(
   req: Request,
@@ -24,13 +24,12 @@ export async function POST(
     );
   }
   const data = getSkillData(skill);
-  if (!data || data.iteration === 0) {
-    return NextResponse.json({ error: "No iteration found" }, { status: 404 });
+  if (!data || data.evals.length === 0) {
+    return NextResponse.json({ error: "No results found" }, { status: 404 });
   }
   const now = new Date().toISOString();
   const payload = {
     skill,
-    iteration: data.iteration,
     status: "complete",
     submitted_at: now,
     reviews: body.reviews.map((r: any) => ({
@@ -39,12 +38,7 @@ export async function POST(
       timestamp: now,
     })),
   };
-  const dest = path.join(
-    WORKSPACE,
-    skill,
-    `iteration-${data.iteration}`,
-    "feedback.json"
-  );
+  const dest = path.join(WORKSPACE, skill, RESULTS_DIR, "feedback.json");
   fs.writeFileSync(dest, JSON.stringify(payload, null, 2));
   return NextResponse.json({ ok: true, saved_to: dest });
 }

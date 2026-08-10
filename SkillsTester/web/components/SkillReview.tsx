@@ -24,12 +24,27 @@ function ConfigTile({
     <div className="config-tile">
       <span className="config-dot" style={{ background: CONFIG_COLORS[config] }} />
       <span className="config-name">{CONFIG_LABELS[config]}</span>
-      <span className={`badge ${allPass ? "pass" : "fail"}`}>
-        {allPass ? "✓" : "✕"} {run.passed}/{run.total}
-      </span>
+      {run.scored ? (
+        <span className={`badge ${allPass ? "pass" : "fail"}`}>
+          {allPass ? "✓" : "✕"} {run.passed}/{run.total}
+        </span>
+      ) : (
+        <span className="badge neutral" title="Phase 1 output; not graded yet">
+          ⏸ unscored
+        </span>
+      )}
       {run.tokens !== null && (
         <span className="muted tnum config-cost">
           {Math.round(run.tokens / 1000)}k tok · {Math.round(run.seconds ?? 0)}s
+        </span>
+      )}
+      {run.metrics && (
+        <span
+          className="muted tnum config-cost"
+          title="Semantic density (facts per 100 comment words) · register score out of 5"
+        >
+          SD {run.metrics.density?.toFixed(1) ?? "—"} · T{" "}
+          {run.metrics.tone ?? "—"}/5
         </span>
       )}
     </div>
@@ -142,23 +157,32 @@ export default function SkillReview({
               ))}
             </div>
             <CodeCompare ev={e} />
-            <details>
-              <summary>
-                Assertions per configuration (
-                {present
-                  .map((c) => {
-                    const r = e.configs[c]!;
-                    return `${r.passed}/${r.total}`;
-                  })
-                  .join(" · ")}
-                )
-              </summary>
-              <div className="config-grid">
-                {present.map((c) => (
-                  <AssertionColumn key={c} config={c} run={e.configs[c]!} />
-                ))}
-              </div>
-            </details>
+            {present.some((c) => e.configs[c]!.scored) ? (
+              <details>
+                <summary>
+                  Assertions per configuration (
+                  {present
+                    .map((c) => {
+                      const r = e.configs[c]!;
+                      return r.scored ? `${r.passed}/${r.total}` : "—";
+                    })
+                    .join(" · ")}
+                  )
+                </summary>
+                <div className="config-grid">
+                  {present
+                    .filter((c) => e.configs[c]!.scored)
+                    .map((c) => (
+                      <AssertionColumn key={c} config={c} run={e.configs[c]!} />
+                    ))}
+                </div>
+              </details>
+            ) : (
+              <p className="muted" style={{ fontSize: 13 }}>
+                Not scored yet — these are phase-1 outputs. Review them, then
+                confirm to run the grading pass.
+              </p>
+            )}
             {e.plantedDefects.length > 0 && (
               <details>
                 <summary>Planted defects ({e.plantedDefects.length})</summary>

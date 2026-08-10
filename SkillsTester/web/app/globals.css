@@ -15,8 +15,8 @@
   --border: rgba(11, 11, 11, 0.1);
   --series-1: #2a78d6; /* categorical slot 1: with skill (legacy single tier) */
   --series-2: #eb6834; /* categorical slot 2: baseline */
-  --series-3: #1e9a6e; /* categorical slot 3: skill CC1 (concise) */
-  --series-4: #8757d6; /* categorical slot 4: skill CC2 (full detail) */
+  --series-3: #1e9a6e; /* categorical slot 3: spare */
+  --series-4: #8757d6; /* categorical slot 4: spare */
   --good: #0ca30c;
   --good-text: #006300;
   --critical: #d03b3b;

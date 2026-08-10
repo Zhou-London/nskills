@@ -8,7 +8,7 @@ import {
   CONFIG_COLORS,
   type ConfigName,
 } from "@/lib/configs";
-import type { EvalData, FileData } from "@/lib/data";
+import type { EvalData, FileData, RunMetrics } from "@/lib/data";
 import { analyze, statsOf, langOf, type CodeLine } from "@/lib/comments";
 import { FileActions, DiffButton } from "./OpenLocal";
 
@@ -24,6 +24,8 @@ interface Column {
   color: string;
   /** File contents by base name. */
   files: Record<string, FileData>;
+  /** Semantic density / register for the run, when it has been scored. */
+  metrics: RunMetrics | null;
 }
 
 const ORIGINAL = "__original__";
@@ -37,6 +39,7 @@ function buildColumns(ev: EvalData): Column[] {
       short: "Original",
       color: "var(--baseline)",
       files: Object.fromEntries(ev.inputs.map((f) => [f.name, f])),
+      metrics: null,
     });
   }
   for (const c of CONFIGS) {
@@ -48,6 +51,7 @@ function buildColumns(ev: EvalData): Column[] {
       short: CONFIG_SHORT[c],
       color: CONFIG_COLORS[c],
       files: Object.fromEntries(run.outputs.map((f) => [f.name, f])),
+      metrics: run.metrics,
     });
   }
   return cols;
@@ -300,6 +304,22 @@ export default function CodeCompare({ ev }: { ev: EvalData }) {
                     ) : (
                       <Stat value={String(wordCount(f.content))} label="words" />
                     )}
+                    {(() => {
+                      const fm = c.metrics?.files[file];
+                      if (!fm || fm.density === null) return null;
+                      return (
+                        <>
+                          <Stat
+                            value={String(fm.semanticUnits)}
+                            label="facts"
+                          />
+                          <Stat
+                            value={fm.density.toFixed(1)}
+                            label="SD (facts/100w)"
+                          />
+                        </>
+                      );
+                    })()}
                   </div>
                   <div
                     className="code-pane"

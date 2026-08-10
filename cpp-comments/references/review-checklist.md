@@ -36,7 +36,22 @@ Ask what a caller could get wrong that the code does not tell them. Most real bu
 - Implementation detail leaking into an interface comment, describing *how* where the caller only needs *what*.
 - A file comment that restates the class comments below it.
 
-## Pass 4 — Noise and mechanics (lowest harm; fix, don't dwell)
+## Pass 4 — Register and density (cheap to fix, and it is what readers feel)
+
+The target register is professional, concise, crisp. Flag every place the file leaves it:
+
+- Filler openers — "Basically", "Essentially", "Actually", "Of course", "Note that", "It should be noted that", "As you can see", "Simply", "Just".
+- Hedges that hide an unanswered question — "should probably", "kind of", "I think", "for some reason". If the uncertainty is real it belongs in a `TODO:`.
+- Chattiness and reader address — "you", "we'll", "let's", "don't worry", "feel free".
+- Cutesy, hyped, or anthropomorphic vocabulary — "magic", "secret sauce", "awesome", "the queue is happy to".
+- Emotive punctuation and decoration — exclamation marks, emoji, ASCII banners, ALL-CAPS emphasis (`TODO:`/`NOTE:`/`WARNING:` excepted).
+- Meta-commentary on the code's quality — "this is ugly but it works", "sorry", "hacky".
+- Intensifiers and vague scale words where a fact belongs — "a bit slow" instead of "takes the table lock for the whole scan".
+- Comment names for a symbol that differ from how the code spells it.
+
+Then the density question, which is the same question in numbers: **how many facts does this comment carry per word it spends?** A three-sentence paragraph carrying one fact is a finding — rewrite it to the one sentence that carries the fact. There is no sentence limit, so judge every long comment by its fact count: flag any comment that could carry the same facts in fewer words, and every usage-example block, which spends many lines on one fact. Give the shorter rewrite alongside the finding.
+
+## Pass 5 — Noise and mechanics (lowest harm; fix, don't dwell)
 
 - Comments that restate the code (`// Increment i` / `++i;`) or the signature (`// Returns the name.` / `const std::string& name() const;`).
 - Boilerplate `Constructs the object` / `Destroys the object`.
@@ -53,6 +68,7 @@ Group findings by file and give each one a line reference, the problem, and the 
 
 - **Wrong** — the comment contradicts the code. Say what the code actually does.
 - **Missing** — name the specific contract that is undocumented, not just "needs a comment".
+- **Register / density** — quote the offending phrasing and give the rewrite, since "sounds unprofessional" is unactionable on its own. Batch repeats: "9 comments open with 'Basically' or 'Note that', e.g. lines 31, 58, 96 — delete the opener".
 - **Noise** — batch these together rather than listing each one; a single "17 comments restate their code, e.g. lines 44, 61, 88" is more useful than 17 entries.
 
 If asked to fix rather than report, apply the same order, and when you cannot determine the true behavior with confidence, say so instead of writing a comment that guesses — a confident wrong comment is exactly what pass 1 exists to clean up.
