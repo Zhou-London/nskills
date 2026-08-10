@@ -1,0 +1,28 @@
+{
+  "eval_id": 0,
+  "eval_name": "add-docstrings",
+  "skill": "python-comments",
+  "prompt": "Add documentation to retry_queue.py: the module, the class, and every method need proper docstrings, plus comments where warranted. Modify the file directly.",
+  "configs": {
+    "with_skill_cc1": "Skill loaded, prompt prefixed with 'CC1.' (concise tier, also the default)",
+    "with_skill_cc2": "Skill loaded, prompt prefixed with 'CC2.' (full-detail tier)",
+    "without_skill": "No skill, original prompt"
+  },
+  "assertions": [
+    "All docstrings use triple double quotes (\"\"\"), none use ''' or single-line ' quotes",
+    "Module, class, and every public method have a docstring; multi-line docstrings have a one-sentence first line ending with a period, then a blank line",
+    "First lines are descriptive (\"Schedules...\", \"Returns...\"), not imperative (\"Schedule...\", \"Return...\")",
+    "next_ready_at documents the -1.0 sentinel meaning (task unknown/not pending)",
+    "mark_failed documents KeyError for unknown task_id (Raises:) and the None return meaning the task was dropped after exhausting attempts",
+    "drain_ready is documented with a Yields: section (not Returns:) and mentions that drained tasks are removed from the queue",
+    "schedule's Returns: explains the True/False semantics (False = task_id already pending, call ignored)",
+    "Args: sections list each parameter with expected types (code has no annotations) and consistent continuation indentation",
+    "No comments that merely restate the code (e.g. '# increment attempts' style)"
+  ],
+  "assertions_cc1": [
+    "Free prose of every docstring (summary line plus expanded description, excluding Args:/Returns:/Raises: sections) is at most 3 sentences",
+    "Each Args:/Returns:/Raises: entry is a single short sentence (allow two for mark_failed's dual None semantics)",
+    "No usage-example blocks or example output listings anywhere in the file"
+  ],
+  "assertions_cc2": []
+}

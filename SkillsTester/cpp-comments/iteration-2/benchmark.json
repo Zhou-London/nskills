@@ -1,0 +1,60 @@
+{
+  "skill_name": "cpp-comments",
+  "iteration": 2,
+  "configurations": [
+    {
+      "name": "with_skill_cc1",
+      "label": "Skill · CC1 (concise, default tier)",
+      "passed": 32,
+      "total": 33,
+      "pass_rate": 97.0,
+      "tokens": 79184,
+      "seconds": 184.3
+    },
+    {
+      "name": "with_skill_cc2",
+      "label": "Skill · CC2 (full detail)",
+      "passed": 29,
+      "total": 29,
+      "pass_rate": 100.0,
+      "tokens": 85811,
+      "seconds": 264.5
+    },
+    {
+      "name": "without_skill",
+      "label": "Baseline (no skill)",
+      "passed": 28,
+      "total": 29,
+      "pass_rate": 96.6,
+      "tokens": 64148,
+      "seconds": 234.8
+    }
+  ],
+  "per_eval": [
+    {
+      "eval": "add-comments-cpp",
+      "with_skill_cc1": "10/11",
+      "with_skill_cc2": "9/9",
+      "without_skill": "9/9"
+    },
+    {
+      "eval": "audit-comments-cpp",
+      "with_skill_cc1": "12/12",
+      "with_skill_cc2": "12/12",
+      "without_skill": "11/12"
+    },
+    {
+      "eval": "generate-module-cpp",
+      "with_skill_cc1": "10/10",
+      "with_skill_cc2": "8/8",
+      "without_skill": "8/8"
+    }
+  ],
+  "notes": [
+    "CC2 is the first perfect 29/29 run in this workspace; CC1's only failure was over-trimming, not brevity: it left max_attempts_ and base_delay_s_ entirely uncommented on add-comments, dropping the required seconds-unit documentation. The CC1 cap says 'shorter comments', but the model read it as 'fewer comments' — likely fix: state in the CC1 section that the cap never justifies omitting a required contract comment entirely.",
+    "CC1 satisfied every brevity assertion it was given: max 2 sentences per block on generate-module, no usage examples anywhere.",
+    "Audit lift is tier-independent: both CC1 and CC2 hit 12/12 with correct severity ordering; the baseline's only failure was ranking noise (commented-out code, malformed TODO, argument-comment form) above missing contracts.",
+    "Cost: CC1 is the cheapest with-skill config (79k tokens, 184s) — cheaper in wall-clock than even the baseline (235s). CC2 cost ~6.6k more tokens and ~80s more than CC1.",
+    "Timing is single-run (n=1 per config) — treat second-level differences as noise."
+  ]
+}

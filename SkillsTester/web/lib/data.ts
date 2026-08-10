@@ -5,8 +5,24 @@ import path from "path";
 export const WORKSPACE =
   process.env.SKILLSTESTER_WS || path.resolve(process.cwd(), "..");
 
-export const CONFIGS = ["with_skill", "without_skill"] as const;
-export type ConfigName = (typeof CONFIGS)[number];
+import { CONFIGS, type ConfigName } from "./configs";
+
+export {
+  CONFIGS,
+  CONFIG_LABELS,
+  CONFIG_COLORS,
+  pct,
+  type ConfigName,
+} from "./configs";
+
+/** The configs actually present in this skill's latest iteration. */
+export function skillConfigs(skill: SkillData): ConfigName[] {
+  const present = new Set<ConfigName>();
+  for (const e of skill.evals) {
+    for (const c of CONFIGS) if (e.configs[c]) present.add(c);
+  }
+  return CONFIGS.filter((c) => present.has(c));
+}
 
 export interface Assertion {
   text: string;
@@ -200,8 +216,4 @@ export function configTotals(
     t.seconds += run.seconds ?? 0;
   }
   return t;
-}
-
-export function pct(passed: number, total: number): number {
-  return total === 0 ? 0 : Math.round((passed / total) * 1000) / 10;
 }

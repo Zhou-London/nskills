@@ -1,6 +1,13 @@
 import Link from "next/link";
-import { listSkillNames, getSkillData, configTotals } from "@/lib/data";
-import { PassMeter, ConfigLegend } from "@/components/PassMeter";
+import {
+  listSkillNames,
+  getSkillData,
+  configTotals,
+  skillConfigs,
+  CONFIG_LABELS,
+  CONFIG_COLORS,
+} from "@/lib/data";
+import { PassMeter } from "@/components/PassMeter";
 
 export const dynamic = "force-dynamic";
 
@@ -15,13 +22,14 @@ export default function Home() {
       <p className="page-sub">
         Repeatable acceptance testing for Claude skills. Every skill runs the
         same three-part gauntlet — add documentation, audit planted defects,
-        generate from scratch — once with the skill loaded and once without.
-        Pick a skill to review its runs or read its report.
+        generate from scratch — under each configuration: the skill at its CC1
+        (concise) and CC2 (full detail) comment-complexity tiers, and a
+        no-skill baseline. Pick a skill to review its runs or read its report.
       </p>
       <div className="skill-grid">
         {skills.map((s) => {
-          const w = configTotals(s, "with_skill");
-          const wo = configTotals(s, "without_skill");
+          const configs = skillConfigs(s);
+          const first = configs.length > 0 ? configTotals(s, configs[0]) : null;
           return (
             <div key={s.name} className="card skill-card">
               <h2>{s.name}</h2>
@@ -30,21 +38,21 @@ export default function Home() {
               </p>
               <div className="muted" style={{ fontSize: 12.5 }}>
                 iteration {s.iteration} · {s.evals.length} evals ·{" "}
-                {w.total} assertions
+                {first?.total ?? 0} assertions
               </div>
               <div className="meter-block">
-                <PassMeter
-                  label="With skill"
-                  passed={w.passed}
-                  total={w.total}
-                  color="var(--series-1)"
-                />
-                <PassMeter
-                  label="Baseline"
-                  passed={wo.passed}
-                  total={wo.total}
-                  color="var(--series-2)"
-                />
+                {configs.map((c) => {
+                  const t = configTotals(s, c);
+                  return (
+                    <PassMeter
+                      key={c}
+                      label={CONFIG_LABELS[c]}
+                      passed={t.passed}
+                      total={t.total}
+                      color={CONFIG_COLORS[c]}
+                    />
+                  );
+                })}
               </div>
               <div className="card-actions">
                 <Link href={`/skills/${s.name}`} className="btn primary">

@@ -8,8 +8,10 @@
   --grid: #e1e0d9;
   --baseline: #c3c2b7;
   --border: rgba(11, 11, 11, 0.1);
-  --series-1: #2a78d6; /* categorical slot 1: with skill */
+  --series-1: #2a78d6; /* categorical slot 1: with skill (legacy single tier) */
   --series-2: #eb6834; /* categorical slot 2: baseline */
+  --series-3: #1e9a6e; /* categorical slot 3: skill CC1 (concise) */
+  --series-4: #8757d6; /* categorical slot 4: skill CC2 (full detail) */
   --good: #0ca30c;
   --good-text: #006300;
   --critical: #d03b3b;
@@ -28,6 +30,8 @@
     --border: rgba(255, 255, 255, 0.1);
     --series-1: #3987e5;
     --series-2: #d95926;
+    --series-3: #2bb381;
+    --series-4: #9a6ee8;
     --good: #0ca30c;
     --good-text: #0ca30c;
     --critical: #d03b3b;
@@ -310,7 +314,7 @@ a {
 }
 .config-grid {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
   gap: 14px;
 }
 @media (max-width: 760px) {

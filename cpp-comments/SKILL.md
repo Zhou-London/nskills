@@ -1,6 +1,6 @@
 ---
 name: cpp-comments
-description: Google C++ Style Guide rules for writing and reviewing comments — file/class/function/variable comments, declaration-vs-definition split, `/*param=*/` argument comments, TODO format, and what NOT to comment. Use this skill whenever you write, generate, or modify C++ code (.h/.hpp/.cc/.cpp/.cxx/.cu), whenever you are asked to add, improve, translate, audit, or review comments or documentation in C++ code, and whenever a C++ review touches comment quality — even if the user never says "Google style" or "comment convention" and even for a small edit to a single function.
+description: Google C++ Style Guide rules for writing and reviewing comments — file/class/function/variable comments, declaration-vs-definition split, `/*param=*/` argument comments, TODO format, and what NOT to comment. Supports two comment-complexity tiers, chosen by a "CC1" or "CC2" marker in the user's prompt — CC1 (concise, at most 2–3 sentences per comment) is the default; CC2 is full detail. Use this skill whenever you write, generate, or modify C++ code (.h/.hpp/.cc/.cpp/.cxx/.cu), whenever you are asked to add, improve, translate, audit, or review comments or documentation in C++ code, and whenever a C++ review touches comment quality — even if the user never says "Google style" or "comment convention" and even for a small edit to a single function.
 ---
 
 # Writing C++ comments (Google style)
@@ -15,6 +15,31 @@ Two failure modes, and the second is the dangerous one:
 
 - **Over-commenting** — restating code in prose. Adds noise, and trains readers to skip comments.
 - **Stale comments** — worse than no comment, because the reader trusts them. Any time you change behavior, the comments describing that behavior are part of the change.
+
+## Comment complexity tiers: CC1 and CC2
+
+Before writing anything, check the user's prompt for a tier marker:
+
+- **CC1 — concise. This is the default**, applying both when the prompt says "CC1" and when it names no tier at all.
+- **CC2 — full detail.** Applies only when the prompt explicitly says "CC2". Under CC2, follow the rest of this skill as written, with no length cap.
+
+CC1 exists to prevent over-documentation: a codebase where every function carries a paragraph trains readers to skim past comments, which is the same failure as commenting nothing. Under CC1:
+
+- Each comment block is capped at **2–3 sentences**. One sentence that carries the contract beats three that pad it.
+- *What* to document does not change — ownership, nullability, thread-safety, sentinels, and rationale are still the content. The cap changes *how much*: keep only the facts a reader would guess wrong, and cut illustrative examples, restatements of the signature, and background a maintainer can recover from the code.
+- If a contract genuinely cannot fit in three sentences (rare, and usually a sign the interface does too much), keep the extra sentence rather than drop a load-bearing fact — the cap is a budget, not a license to ship an incomplete contract.
+
+For example, the `SendBlocking` comment shown later in this skill compresses under CC1 to:
+
+```cpp
+// Sends `request` to the backend, blocking until a response or `timeout` (nullptr
+// on timeout). Does not retain `request`; `observer` may be null.
+std::unique_ptr<Response> SendBlocking(const Request& request,
+                                       absl::Duration timeout,
+                                       ProgressObserver* observer);
+```
+
+Every contract fact survives; only the padding is gone.
 
 ## Where each kind of information lives
 
@@ -175,3 +200,5 @@ A TODO that says "someday" never gets done. If it is scheduled, tie it to a spec
 ## Reviewing or improving existing comments
 
 When the task is auditing comments rather than writing new code — "check the comments in this file", "improve the docs on this class", "review this PR's comments" — read `references/review-checklist.md` for the pass order and the findings format. Work from most-harmful to least: comments that are now false, then contracts that are missing, then noise.
+
+The complexity tier applies to audits too: under CC1 (the default), a comment that is correct but runs past 2–3 sentences is itself a finding — trim it to its load-bearing sentences. Under CC2, length alone is never a finding.

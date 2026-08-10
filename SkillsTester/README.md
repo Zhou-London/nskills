@@ -27,9 +27,16 @@ Inside every `iteration-N/eval-<id>-<name>/`:
 
 ```
 eval_metadata.json     # assertions (acceptance criteria); audit evals also list planted_defects
-with_skill/run-1/      # run forced to read SKILL.md first: outputs/ + grading.json + timing.json
+with_skill_cc1/run-1/  # skill run at the CC1 (concise, default) tier — prompt prefixed "CC1."
+with_skill_cc2/run-1/  # skill run at the CC2 (full detail) tier — prompt prefixed "CC2."
 without_skill/run-1/   # baseline run forbidden from using the skill
 ```
+
+Each run directory holds outputs/ + grading.json + timing.json. From
+iteration-2 the with-skill runs are split by the skills' comment-complexity
+tiers (CC1/CC2); iteration-1 predates the tiers and has a single `with_skill/`
+config. eval_metadata.json carries the shared `assertions` plus per-tier
+extras in `assertions_cc1` (brevity caps) and `assertions_cc2`.
 
 ## Web UI
 

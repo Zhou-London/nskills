@@ -1,0 +1,50 @@
+{
+  "config": "without_skill",
+  "expectations": [
+    {
+      "text": "Module has a docstring with a one-line summary of what the module provides",
+      "passed": true,
+      "evidence": "First line: \"Token-bucket rate limiter.\" followed by expanded description."
+    },
+    {
+      "text": "TokenBucket class docstring includes an Attributes: section documenting public attributes",
+      "passed": true,
+      "evidence": "Class docstring lines 51-53: \"Attributes:\" documenting rate and capacity, which are the public attributes (self.rate, self.capacity)."
+    },
+    {
+      "text": "acquire and try_acquire have docstrings with Args: and Returns: sections; Raises: present where the code raises for invalid input",
+      "passed": true,
+      "evidence": "Both have Args:, Returns:, Raises: (\"ValueError: If ``n`` is not positive, exceeds ``capacity``, or if ``timeout`` is negative.\"), matching the actual raises."
+    },
+    {
+      "text": "All docstrings use triple double quotes with descriptive (not imperative) first lines ending in a period",
+      "passed": true,
+      "evidence": "All 8 docstrings use \"\"\"; first lines descriptive with periods, e.g. \"Acquires ``n`` tokens, blocking until they are available.\", \"Validates a token request size.\", \"Adds tokens accrued since the last refill.\""
+    },
+    {
+      "text": "With type annotations present, docstrings describe semantics without repeating the types",
+      "passed": true,
+      "evidence": "Annotated params are described semantically (\"timeout: Maximum number of seconds to wait.\"); the only type mention (\"callable returning ... a float\") is for the unannotated clock parameter."
+    },
+    {
+      "text": "try_acquire's Returns: explains the True/False semantics; acquire documents its blocking behavior",
+      "passed": true,
+      "evidence": "try_acquire Returns: \"True if the tokens were available and have been consumed, False if there were not enough tokens...\"; acquire: \"blocking until they are available\" and \"this method sleeps until enough tokens have been refilled\"."
+    },
+    {
+      "text": "Any inline comments are separated from code by at least two spaces and explain intent rather than restating code",
+      "passed": true,
+      "evidence": "One trailing comment, line 91: \"self._tokens = self.capacity  # Bucket starts full.\" — two spaces, states the invariant/intent; block comments (lines 147, 155-156) also explain intent."
+    },
+    {
+      "text": "Thread-safety behavior is stated in the class or module docstring (either safe or not — just stated)",
+      "passed": true,
+      "evidence": "Class docstring: \"A thread-safe token-bucket rate limiter.\" plus a dedicated \"Thread safety:\" paragraph (lines 55-59)."
+    }
+  ],
+  "summary": {
+    "passed": 8,
+    "total": 8,
+    "notes": "Thorough documentation that happens to satisfy all shared assertions, though it mixes in reST markup (``x``, :meth:) rather than pure Google style."
+  }
+}

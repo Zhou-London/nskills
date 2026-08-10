@@ -1,6 +1,6 @@
 ---
 name: python-comments
-description: Google Python Style Guide rules for writing and reviewing comments and docstrings — module/class/function docstrings with Args/Returns/Raises sections, block and inline comments, TODO format, and what NOT to comment. Use this skill whenever you write, generate, or modify Python code (.py, .pyi, notebooks), whenever you are asked to add, improve, translate, audit, or review comments, docstrings, or documentation in Python code, and whenever a Python review touches comment or docstring quality — even if the user never says "Google style" or "docstring convention" and even for a small edit to a single function.
+description: Google Python Style Guide rules for writing and reviewing comments and docstrings — module/class/function docstrings with Args/Returns/Raises sections, block and inline comments, TODO format, and what NOT to comment. Supports two comment-complexity tiers, chosen by a "CC1" or "CC2" marker in the user's prompt — CC1 (concise, at most 2–3 sentences per comment or docstring prose) is the default; CC2 is full detail. Use this skill whenever you write, generate, or modify Python code (.py, .pyi, notebooks), whenever you are asked to add, improve, translate, audit, or review comments, docstrings, or documentation in Python code, and whenever a Python review touches comment or docstring quality — even if the user never says "Google style" or "docstring convention" and even for a small edit to a single function.
 ---
 
 # Writing Python comments and docstrings (Google style)
@@ -15,6 +15,41 @@ Two failure modes, and the second is the dangerous one:
 
 - **Over-commenting** — restating code in prose. Adds noise, and trains readers to skip comments.
 - **Stale comments** — worse than no comment, because the reader trusts them. Any time you change behavior, the docstrings and comments describing that behavior are part of the change.
+
+## Comment complexity tiers: CC1 and CC2
+
+Before writing anything, check the user's prompt for a tier marker:
+
+- **CC1 — concise. This is the default**, applying both when the prompt says "CC1" and when it names no tier at all.
+- **CC2 — full detail.** Applies only when the prompt explicitly says "CC2". Under CC2, follow the rest of this skill as written, with no length cap.
+
+CC1 exists to prevent over-documentation: a codebase where every function carries a paragraph of prose trains readers to skim past docstrings, which is the same failure as documenting nothing. Under CC1:
+
+- Each block or inline comment, and the free prose of each docstring (summary line plus any expanded description), is capped at **2–3 sentences**. Prefer a one-line docstring whenever the summary sentence already covers the contract.
+- Structured sections (`Args:`, `Returns:`, `Raises:`, `Attributes:`) survive when they carry contract information the signature doesn't, but each entry shrinks to one short sentence. Drop usage-example blocks and example return values.
+- *What* to document does not change — parameter meaning, sentinel returns, escaping exceptions, and side effects are still the content. The cap changes *how much*: keep only the facts a caller would guess wrong, and cut everything the code or annotations already say.
+- If a contract genuinely cannot fit in the budget (rare, and usually a sign the function does too much), keep the extra sentence rather than drop a load-bearing fact — the cap is a budget, not a license to ship an incomplete contract.
+
+For example, the `fetch_smalltable_rows` docstring shown later in this skill compresses under CC1 to:
+
+```python
+    """Fetches rows for `keys` from a Smalltable, as a dict of key to row tuple.
+
+    Args:
+        table_handle: An open smalltable.Table instance.
+        keys: Keys of the rows to fetch; string keys are UTF-8 encoded.
+        require_all_keys: If True, only rows with values set for all keys are returned.
+
+    Returns:
+        A dict mapping each found key (always bytes) to its row, a tuple of
+        strings; missing rows are absent from the dict.
+
+    Raises:
+        IOError: An error occurred accessing the smalltable.
+    """
+```
+
+Every contract fact survives; the example table and restatements are gone.
 
 ## Where each kind of information lives
 
@@ -188,3 +223,5 @@ The name or bug you cite is *where to find context*, not who has been assigned t
 ## Reviewing or improving existing comments
 
 When the task is auditing rather than writing — "check the docstrings in this file", "improve the docs on this module", "review this PR's comments" — read `references/review-checklist.md` for the pass order and the findings format. Work from most-harmful to least: docstrings that are now false, then missing contracts, then structure violations, then noise.
+
+The complexity tier applies to audits too: under CC1 (the default), a docstring or comment that is correct but runs past its 2–3 sentence budget is itself a finding — trim it to its load-bearing sentences. Under CC2, length alone is never a finding.

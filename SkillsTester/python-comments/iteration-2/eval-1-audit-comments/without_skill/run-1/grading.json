@@ -1,0 +1,65 @@
+{
+  "config": "without_skill",
+  "expectations": [
+    {
+      "text": "Report identifies get()'s docstring/behavior contradiction (says returns None, actually raises KeyError) and ranks it at or near the top",
+      "passed": true,
+      "evidence": "Item 1 under 'High severity — docstrings that actively mislead': \"The code never returns `None`... raises `KeyError` explicitly on line 30 when the session has expired.\""
+    },
+    {
+      "text": "Report flags the nonexistent 'timeout' parameter in put()'s docstring as a false-documentation issue",
+      "passed": true,
+      "evidence": "Item 2 (High severity): \"The docstring lists a `timeout` parameter... there is no `timeout` parameter... This looks like a stale copy/paste.\""
+    },
+    {
+      "text": "Report flags iter_expired() as a generator wrongly documented with Returns:/'a list' instead of Yields:",
+      "passed": true,
+      "evidence": "Item 3: \"says it 'Returns: A list of session ids that have expired,' but the function is a generator... The docstring should use `Yields:`.\""
+    },
+    {
+      "text": "Report flags 'Arguments:' as the wrong section name (should be Args:)",
+      "passed": true,
+      "evidence": "Item 2 secondary bullet: \"Uses the non-standard section header `Arguments:` instead of `Args:`... not recognized by Google-style docstring tooling.\""
+    },
+    {
+      "text": "Report flags the ''' quotes on the class docstring",
+      "passed": true,
+      "evidence": "Item 9: \"The class docstring uses `'''single quotes'''` while every other docstring in the file uses `\\\"\\\"\\\"`. PEP 257 and the Google style guide prescribe `\\\"\\\"\\\"`.\""
+    },
+    {
+      "text": "Report flags the imperative mood / missing period on delete()'s summary line",
+      "passed": true,
+      "evidence": "Item 11 flags both: \"Missing terminal period\" and \"Uses imperative mood ('Delete...') while the rest of the file uses descriptive third person... Google style prefers the descriptive form.\""
+    },
+    {
+      "text": "Report flags the commented-out code in put() and recommends deletion",
+      "passed": true,
+      "evidence": "Item 4: \"Dead code should be deleted, not commented out — version control already preserves history... the fossilized code should go.\""
+    },
+    {
+      "text": "Report flags the malformed TODO above purge()",
+      "passed": true,
+      "evidence": "Item 5: \"# TODO fix this later... No owner, issue link, or bug reference (conventional format: `TODO(username):`...)\" and notes it is unactionable."
+    },
+    {
+      "text": "Report flags purge() as missing a required docstring",
+      "passed": true,
+      "evidence": "Item 6: \"A public method with a non-obvious return value (the count of purged sessions) has no docstring at all.\""
+    },
+    {
+      "text": "Findings are ordered by severity: wrong/contradictory documentation before missing contracts before formatting noise",
+      "passed": false,
+      "evidence": "Wrong-documentation items (1-3) correctly lead, but within Medium the noise items — commented-out code (item 4) and the malformed TODO (item 5) — are ranked ABOVE the missing-contract items: purge()'s missing docstring (item 6) and undocumented __init__/ttl/lookup_count (item 7). Missing contracts do not clearly precede noise as the assertion requires."
+    },
+    {
+      "text": "Report gives line references and does not modify the source file",
+      "passed": true,
+      "evidence": "Line references throughout (e.g. 'lines 16–31', 'line 59', 'lines 60–65') plus a summary table with locations; report states 'No code was changed', git status for session_store.py is clean, and all planted defects remain present."
+    }
+  ],
+  "summary": {
+    "passed": 10,
+    "total": 11,
+    "notes": "Thorough audit that catches every planted defect with line references and leaves the source untouched, but its severity ordering places commented-out code and the malformed TODO above the missing-docstring contract gaps, violating the required wrong-before-missing-before-noise order."
+  }
+}

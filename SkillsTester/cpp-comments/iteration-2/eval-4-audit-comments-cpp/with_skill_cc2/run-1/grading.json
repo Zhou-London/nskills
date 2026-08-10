@@ -1,0 +1,66 @@
+{
+  "config": "with_skill_cc2",
+  "expectations": [
+    {
+      "text": "Report identifies Get()'s comment/behavior contradiction (claims empty string, actually throws std::out_of_range) and ranks it at/near the top",
+      "passed": true,
+      "evidence": "Finding 1.1 is the first finding under 'Severity 1 — Wrong': \"The comment says a missing or expired session yields an **empty string** ... `sessions_.at(session_id)` throw `std::out_of_range` ... explicitly throws `std::out_of_range`.\""
+    },
+    {
+      "text": "Report flags the nonexistent 'timeout_s' parameter in Get()'s comment",
+      "passed": true,
+      "evidence": "Finding 1.2: \"`Get` declaration comment describes a parameter that does not exist (h:16–17) ... There is no `timeout_s` parameter ... a stale remnant of an earlier signature.\""
+    },
+    {
+      "text": "Report flags the header comment duplicated into the .cc as a wrong-place/drift problem",
+      "passed": true,
+      "evidence": "Finding 3.1 under 'Severity 3 — Wrong place': \"Header contract comment duplicated onto the `.cc` definition (cc:7–8) ... it has already drifted ... The contract belongs at the declaration only.\""
+    },
+    {
+      "text": "Report flags the undocumented ttl_s_ negative-value sentinel (never expires)",
+      "passed": true,
+      "evidence": "Finding 2.2: \"a **negative TTL disables expiry entirely** — sessions live forever. Neither the constructor comment ... nor the `ttl_s_` member documents this sentinel.\""
+    },
+    {
+      "text": "Report flags Get()'s undocumented side effect of evicting the expired entry on read",
+      "passed": true,
+      "evidence": "Finding 2.1: \"It **evicts** an expired session before throwing (cc:13), so a failed `Get` mutates the store ... both belong in the declaration comment.\""
+    },
+    {
+      "text": "Report flags the Author: line for removal",
+      "passed": true,
+      "evidence": "Finding 4.4: \"`// Author: bob@example.com` — remove. Version control records authorship, and the line goes stale.\""
+    },
+    {
+      "text": "Report flags Delete()'s imperative mood / missing period",
+      "passed": true,
+      "evidence": "Finding 4.6 'Imperative mood and missing punctuation (h:24)': \"should be third-person declarative with a period: 'Deletes the session and returns whether it existed.'\""
+    },
+    {
+      "text": "Report flags the commented-out code in Put() and recommends deletion",
+      "passed": true,
+      "evidence": "Finding 4.1 'Commented-out code (cc:21–24)': \"Delete it. Version control remembers it; 'kept for reference' blocks are dead weight.\""
+    },
+    {
+      "text": "Report flags the malformed TODO above Purge()",
+      "passed": true,
+      "evidence": "Finding 4.2: \"`// TODO fix this later` breaks every rule of the TODO format: no colon, no context reference (bug ID, doc link, or username), no statement of *what* is wrong with `Purge`.\""
+    },
+    {
+      "text": "Report flags '/* notify */ false' as not conforming to /*param_name=*/value form",
+      "passed": true,
+      "evidence": "Finding 4.3: \"`Evict(session_id, /* notify */ false)` — the required form is `/*notify=*/`false: no spaces inside the delimiters, `=` abutting the value.\""
+    },
+    {
+      "text": "Findings ordered by severity: wrong/contradictory comments before missing contracts before formatting noise",
+      "passed": true,
+      "evidence": "Explicit severity tiers: 'Severity 1 — Wrong', 'Severity 2 — Missing', 'Severity 3 — Wrong place', 'Severity 4 — Noise and mechanics', with content matching each tier."
+    },
+    {
+      "text": "Report gives file/line references and does not modify the sources",
+      "passed": true,
+      "evidence": "Consistent h:/cc: line citations throughout (e.g. 'h:15–18', 'cc:7–8', 'cc:32'); report states 'No code has been changed' and both source files still contain all planted defects."
+    }
+  ],
+  "summary": { "passed": 12, "total": 12, "notes": "Thorough full-detail audit covering every planted defect plus extra legitimate findings, with an explicit severity ordering, precise line references, and unmodified sources." }
+}

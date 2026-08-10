@@ -1,0 +1,51 @@
+{
+  "config": "with_skill_cc2",
+  "expectations": [
+    {
+      "text": "All docstrings use triple double quotes (\"\"\"), none use ''' or single-line ' quotes",
+      "passed": true,
+      "evidence": "Every docstring opens/closes with \"\"\" (lines 1, 22, 43, 62, 89, 106, 135); no ''' or single-quote docstrings anywhere."
+    },
+    {
+      "text": "Module, class, and every public method have a docstring; multi-line docstrings have a one-sentence first line ending with a period, then a blank line",
+      "passed": true,
+      "evidence": "All seven docstrings present; each first line is one sentence ending in a period with a blank line after, e.g. line 1 \"An in-memory retry queue with exponential backoff scheduling.\" then blank line 2; line 106 \"Records a failed attempt and reschedules or drops the task.\" then blank line 107."
+    },
+    {
+      "text": "First lines are descriptive (\"Schedules...\", \"Returns...\"), not imperative (\"Schedule...\", \"Return...\")",
+      "passed": true,
+      "evidence": "All third-person: \"Initializes\" (43), \"Adds\" (62), \"Returns\" (89), \"Records\" (106), \"Yields and removes\" (135)."
+    },
+    {
+      "text": "next_ready_at documents the -1.0 sentinel meaning (task unknown/not pending)",
+      "passed": true,
+      "evidence": "Lines 96-98: \"or -1.0 if task_id is not pending (never scheduled, already drained, or dropped after exhausting its attempts).\""
+    },
+    {
+      "text": "mark_failed documents KeyError for unknown task_id (Raises:) and the None return meaning the task was dropped after exhausting attempts",
+      "passed": true,
+      "evidence": "Lines 122-123: \"Raises:\\n    KeyError: If task_id is not currently pending.\" Lines 119-120: \"or None if it exhausted its attempts and was dropped from the queue.\""
+    },
+    {
+      "text": "drain_ready is documented with a Yields: section (not Returns:) and mentions that drained tasks are removed from the queue",
+      "passed": true,
+      "evidence": "Lines 147-150: \"Yields:\" with \"(task_id, payload) pairs ... Each yielded task is removed from the queue as it is produced.\" No Returns: section."
+    },
+    {
+      "text": "schedule's Returns: explains the True/False semantics (False = task_id already pending, call ignored)",
+      "passed": true,
+      "evidence": "Lines 79-80: \"True if the task was newly scheduled; False if task_id was already pending and the call was a no-op.\""
+    },
+    {
+      "text": "Args: sections list each parameter with expected types (code has no annotations) and consistent continuation indentation",
+      "passed": false,
+      "evidence": "Continuation indentation is consistent (4-space hang), but types are absent from most entries: line 73 \"payload: Arbitrary task data handed back verbatim...\", line 75 \"now: Timestamp at which the task becomes ready.\", line 46 \"max_attempts: Maximum number of failures...\" — no explicit int/float type; only task_id's \"Hashable identifier\" (line 71) hints at a type."
+    },
+    {
+      "text": "No comments that merely restate the code (e.g. '# increment attempts' style)",
+      "passed": true,
+      "evidence": "Only two comments, both informative: line 58 \"# Maps task_id to a mutable [payload, attempts, ready_at] entry.\" and line 153 \"# Snapshot the keys so deleting entries mid-iteration is safe.\" — both explain non-obvious rationale/structure."
+    }
+  ],
+  "summary": { "passed": 8, "total": 9, "notes": "Detailed, accurate full-tier documentation that satisfies everything except stating explicit parameter types in the Args sections." }
+}

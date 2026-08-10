@@ -1,0 +1,65 @@
+{
+  "config": "with_skill_cc2",
+  "expectations": [
+    {
+      "text": "Report identifies get()'s docstring/behavior contradiction (says returns None, actually raises KeyError) and ranks it at or near the top",
+      "passed": true,
+      "evidence": "Item 1.1, first finding under '1. Wrong — docstrings that contradict the code (highest harm)': \"documented to return `None`; actually raises `KeyError`... The implementation never returns `None`.\""
+    },
+    {
+      "text": "Report flags the nonexistent 'timeout' parameter in put()'s docstring as a false-documentation issue",
+      "passed": true,
+      "evidence": "Item 1.2 (in the 'Wrong' section): \"`Arguments:` section documents a parameter that does not exist... there is no `timeout` parameter, and per-session timeouts do not exist.\""
+    },
+    {
+      "text": "Report flags iter_expired() as a generator wrongly documented with Returns:/'a list' instead of Yields:",
+      "passed": true,
+      "evidence": "Item 1.3: \"documented as returning a list; it is a generator... A generator must be documented with `Yields:`, not `Returns:`.\""
+    },
+    {
+      "text": "Report flags 'Arguments:' as the wrong section name (should be Args:)",
+      "passed": true,
+      "evidence": "Item 4.2: \"Line 36: `Arguments:` should be `Args:` — tools (and readers) key on the canonical section names.\""
+    },
+    {
+      "text": "Report flags the ''' quotes on the class docstring",
+      "passed": true,
+      "evidence": "Item 4.1: \"Line 9: class docstring uses triple **single** quotes (`'''...'''`); PEP 257 / Google style require `\\\"\\\"\\\"`.\""
+    },
+    {
+      "text": "Report flags the imperative mood / missing period on delete()'s summary line",
+      "passed": true,
+      "evidence": "Item 3.2 flags the imperative summary (\"Google style requires the descriptive register\") and item 4.1 flags \"line 46: `delete` summary line lacks terminal punctuation.\""
+    },
+    {
+      "text": "Report flags the commented-out code in put() and recommends deletion",
+      "passed": true,
+      "evidence": "Item 4.4: \"Lines 40–42: the old duplicate-check implementation is kept in comments... Version control remembers it; delete it.\""
+    },
+    {
+      "text": "Report flags the malformed TODO above purge()",
+      "passed": true,
+      "evidence": "Item 4.5: \"Line 59: `# TODO fix this later` violates every part of the TODO format: no context reference (bug link or username), no colon, and no concrete completion condition.\""
+    },
+    {
+      "text": "Report flags purge() as missing a required docstring",
+      "passed": true,
+      "evidence": "Item 2.3: \"`purge` (lines 60–65): no docstring at all... public, non-trivial, and returns an undocumented value.\""
+    },
+    {
+      "text": "Findings are ordered by severity: wrong/contradictory documentation before missing contracts before formatting noise",
+      "passed": true,
+      "evidence": "Explicit structure: section 1 'Wrong — docstrings that contradict the code (highest harm)', section 2 'Missing — contract information', section 3 'Wrong place / wrong register', section 4 'Mechanics and noise (lowest harm)'."
+    },
+    {
+      "text": "Report gives line references and does not modify the source file",
+      "passed": true,
+      "evidence": "Line references on every finding (e.g. 'lines 16–31', 'line 37', 'line 59'); report states 'No code was changed', git status for session_store.py is clean, and all planted defects remain present."
+    }
+  ],
+  "summary": {
+    "passed": 11,
+    "total": 11,
+    "notes": "Full-detail audit covers every planted defect with an explicit four-tier severity ordering, precise line references, and an unmodified source file."
+  }
+}

@@ -1,0 +1,41 @@
+{
+  "eval_id": 4,
+  "eval_name": "audit-comments-cpp",
+  "skill": "cpp-comments",
+  "prompt": "Review the comment quality of session_store.h and session_store.cc. Write a report listing every problem you find, ordered by severity. Do not change the code yet.",
+  "configs": {
+    "with_skill_cc1": "Skill loaded, prompt prefixed with 'CC1.' (concise tier, also the default)",
+    "with_skill_cc2": "Skill loaded, prompt prefixed with 'CC2.' (full-detail tier)",
+    "without_skill": "No skill, original prompt"
+  },
+  "planted_defects": [
+    "Get() comment claims 'empty string if missing/expired' but code throws std::out_of_range (via .at() and explicit throw) — WRONG, highest harm",
+    "Get() comment documents a nonexistent 'timeout_s' parameter — WRONG",
+    "Get() declaration comment duplicated into session_store.cc above the definition — wrong place, drift risk",
+    "ttl_s_ sentinel: negative value means 'never expire' (code checks ttl_s_ >= 0), undocumented — missing contract",
+    "Get() side effect: expired entry is evicted on read — undocumented",
+    "Author: line in the session_store.h file comment",
+    "Delete(): imperative mood ('Delete the...') and missing terminal period",
+    "Commented-out code block in Put()",
+    "Malformed TODO ('// TODO fix this later') above Purge() in the .cc",
+    "Noise inline comment '// increment the lookup counter'",
+    "Argument comment '/* notify */ false' not in the required /*notify=*/false form",
+    "Evict(): private helper with a bool parameter and no comment; empty if(notify) body unexplained"
+  ],
+  "assertions": [
+    "Report identifies Get()'s comment/behavior contradiction (claims empty string, actually throws std::out_of_range) and ranks it at/near the top",
+    "Report flags the nonexistent 'timeout_s' parameter in Get()'s comment",
+    "Report flags the header comment duplicated into the .cc as a wrong-place/drift problem",
+    "Report flags the undocumented ttl_s_ negative-value sentinel (never expires)",
+    "Report flags Get()'s undocumented side effect of evicting the expired entry on read",
+    "Report flags the Author: line for removal",
+    "Report flags Delete()'s imperative mood / missing period",
+    "Report flags the commented-out code in Put() and recommends deletion",
+    "Report flags the malformed TODO above Purge()",
+    "Report flags '/* notify */ false' as not conforming to /*param_name=*/value form",
+    "Findings ordered by severity: wrong/contradictory comments before missing contracts before formatting noise",
+    "Report gives file/line references and does not modify the sources"
+  ],
+  "assertions_cc1": [],
+  "assertions_cc2": []
+}

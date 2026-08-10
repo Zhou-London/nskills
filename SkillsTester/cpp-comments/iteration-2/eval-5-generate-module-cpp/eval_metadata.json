@@ -1,0 +1,26 @@
+{
+  "eval_id": 5,
+  "eval_name": "generate-module-cpp",
+  "skill": "cpp-comments",
+  "prompt": "Write a C++ token-bucket rate limiter: rate_limiter.h and rate_limiter.cc, with a TokenBucket class supporting a blocking Acquire(n) and a non-blocking TryAcquire(n). Comments must be complete.",
+  "configs": {
+    "with_skill_cc1": "Skill loaded, prompt prefixed with 'CC1.' (concise tier, also the default)",
+    "with_skill_cc2": "Skill loaded, prompt prefixed with 'CC2.' (full-detail tier)",
+    "without_skill": "No skill, original prompt"
+  },
+  "assertions": [
+    "TokenBucket class comment in the .h says what the class is for and states its thread-safety guarantee explicitly",
+    "Every public method declaration in the .h has a contract comment: what it does, parameter meaning/units, return value semantics",
+    "Acquire documents its blocking semantics (and timeout behavior if a timeout is offered); TryAcquire documents True/False semantics and that nothing is consumed on failure",
+    "Units are documented for rates and durations (tokens per second, seconds)",
+    "Function comments are third-person declarative with proper punctuation",
+    "The .cc does not duplicate the .h contract comments; its comments explain implementation choices (e.g. why sleeping outside the lock / condition-variable usage)",
+    "No comments that restate the code; no Author: lines; // style used consistently",
+    "If any call site passes a bare literal argument, it uses the /*param_name=*/value comment form (vacuously true if no such call exists)"
+  ],
+  "assertions_cc1": [
+    "Every comment block is at most 3 sentences",
+    "No usage-example code blocks inside comments"
+  ],
+  "assertions_cc2": []
+}

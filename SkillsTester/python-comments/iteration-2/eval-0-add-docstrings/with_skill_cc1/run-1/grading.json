@@ -1,0 +1,66 @@
+{
+  "config": "with_skill_cc1",
+  "expectations": [
+    {
+      "text": "All docstrings use triple double quotes (\"\"\"), none use ''' or single-line ' quotes",
+      "passed": true,
+      "evidence": "Every docstring opens/closes with \"\"\" (lines 1, 15, 27, 45, 63, 70, 95); grep finds no ''' or single-quote docstrings."
+    },
+    {
+      "text": "Module, class, and every public method have a docstring; multi-line docstrings have a one-sentence first line ending with a period, then a blank line",
+      "passed": true,
+      "evidence": "Module (line 1), class (line 15), __init__, schedule, next_ready_at, mark_failed, drain_ready all have docstrings. Multi-line ones start with one sentence ending in a period followed by a blank line, e.g. line 45 \"Adds a task to the queue, ready immediately.\" then blank line 46. next_ready_at is single-line, which is exempt."
+    },
+    {
+      "text": "First lines are descriptive (\"Schedules...\", \"Returns...\"), not imperative (\"Schedule...\", \"Return...\")",
+      "passed": true,
+      "evidence": "All third-person: \"Initializes\" (27), \"Adds\" (45), \"Returns\" (63), \"Records\" (70), \"Removes and yields\" (95)."
+    },
+    {
+      "text": "next_ready_at documents the -1.0 sentinel meaning (task unknown/not pending)",
+      "passed": true,
+      "evidence": "Line 63: \"Returns the task's ready time, or -1.0 if task_id is not pending.\""
+    },
+    {
+      "text": "mark_failed documents KeyError for unknown task_id (Raises:) and the None return meaning the task was dropped after exhausting attempts",
+      "passed": true,
+      "evidence": "Lines 81-82: \"Raises:\\n    KeyError: If task_id is not pending.\" Lines 78-79: \"or None if it exhausted its attempts and was dropped.\""
+    },
+    {
+      "text": "drain_ready is documented with a Yields: section (not Returns:) and mentions that drained tasks are removed from the queue",
+      "passed": true,
+      "evidence": "Lines 100-102: \"Yields:\\n    (task_id, payload) pairs for each ready task; yielded tasks are removed from the queue.\" No Returns: section."
+    },
+    {
+      "text": "schedule's Returns: explains the True/False semantics (False = task_id already pending, call ignored)",
+      "passed": true,
+      "evidence": "Line 54: \"True if the task was added, False if task_id is already pending.\""
+    },
+    {
+      "text": "Args: sections list each parameter with expected types (code has no annotations) and consistent continuation indentation",
+      "passed": false,
+      "evidence": "Continuation indentation is consistent, but no Args entry states a type: line 48 \"task_id: Unique identifier for the task.\", line 30 \"max_attempts: Failures allowed before a task is dropped\" — no int/float/str/Hashable type given for any parameter despite the unannotated code."
+    },
+    {
+      "text": "No comments that merely restate the code (e.g. '# increment attempts' style)",
+      "passed": true,
+      "evidence": "Only three comments, all informative: line 41 \"# Maps task_id to [payload, failure_count, ready_at].\" (documents opaque list layout), line 90 \"# Exponential backoff: base_delay doubles with each failure.\" (explains the formula's intent). No restating comments."
+    },
+    {
+      "text": "Free prose of every docstring (summary line plus expanded description, excluding Args:/Returns:/Raises: sections) is at most 3 sentences",
+      "passed": true,
+      "evidence": "Module: 1 sentence + example intro; class: 2 sentences (lines 15-18); __init__, schedule, next_ready_at, mark_failed, drain_ready: 1 sentence of prose each. All at most 3."
+    },
+    {
+      "text": "Each Args:/Returns:/Raises: entry is a single short sentence (allow two for mark_failed's dual None semantics)",
+      "passed": true,
+      "evidence": "Every entry is one sentence, e.g. line 54 Returns, line 30-31 \"Failures allowed before a task is dropped; must be >= 1.\", mark_failed Returns (lines 78-79) is a single sentence covering both outcomes."
+    },
+    {
+      "text": "No usage-example blocks or example output listings anywhere in the file",
+      "passed": false,
+      "evidence": "Module docstring lines 3-8 contain \"Typical usage example:\" followed by a code block (\"queue = RetryQueue(max_attempts=3)\" etc.)."
+    }
+  ],
+  "summary": { "passed": 10, "total": 12, "notes": "Strong Google-style output that misses only parameter types in Args entries and includes a usage-example block forbidden by the CC1 tier." }
+}

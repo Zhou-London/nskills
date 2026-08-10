@@ -1,16 +1,13 @@
 "use client";
 
 import { useState } from "react";
-import type { EvalData, ConfigName } from "@/lib/data";
-
-const CONFIG_LABELS: Record<ConfigName, string> = {
-  with_skill: "With skill",
-  without_skill: "Baseline (no skill)",
-};
-const CONFIG_COLORS: Record<ConfigName, string> = {
-  with_skill: "var(--series-1)",
-  without_skill: "var(--series-2)",
-};
+import {
+  CONFIGS,
+  CONFIG_LABELS,
+  CONFIG_COLORS,
+  type ConfigName,
+} from "@/lib/configs";
+import type { EvalData } from "@/lib/data";
 
 function ConfigColumn({
   config,
@@ -138,8 +135,9 @@ export default function SkillReview({
             <strong style={{ color: "var(--ink)" }}>Prompt.</strong> {e.prompt}
           </div>
           <div className="config-grid">
-            <ConfigColumn config="with_skill" run={e.configs.with_skill} />
-            <ConfigColumn config="without_skill" run={e.configs.without_skill} />
+            {CONFIGS.filter((c) => e.configs[c]).map((c) => (
+              <ConfigColumn key={c} config={c} run={e.configs[c]} />
+            ))}
           </div>
           {e.plantedDefects.length > 0 && (
             <details>

@@ -1,4 +1,9 @@
-import { pct } from "@/lib/data";
+import {
+  pct,
+  CONFIG_LABELS,
+  CONFIG_COLORS,
+  type ConfigName,
+} from "@/lib/configs";
 
 export function PassMeter({
   label,
@@ -31,17 +36,15 @@ export function PassMeter({
   );
 }
 
-export function ConfigLegend() {
+export function ConfigLegend({ configs }: { configs: ConfigName[] }) {
   return (
     <div className="legend">
-      <span>
-        <span className="swatch" style={{ background: "var(--series-1)" }} />
-        With skill
-      </span>
-      <span>
-        <span className="swatch" style={{ background: "var(--series-2)" }} />
-        Baseline (no skill)
-      </span>
+      {configs.map((c) => (
+        <span key={c}>
+          <span className="swatch" style={{ background: CONFIG_COLORS[c] }} />
+          {CONFIG_LABELS[c]}
+        </span>
+      ))}
     </div>
   );
 }

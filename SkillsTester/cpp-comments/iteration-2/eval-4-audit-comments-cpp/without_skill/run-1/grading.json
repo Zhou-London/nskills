@@ -1,0 +1,66 @@
+{
+  "config": "without_skill",
+  "expectations": [
+    {
+      "text": "Report identifies Get()'s comment/behavior contradiction (claims empty string, actually throws std::out_of_range) and ranks it at/near the top",
+      "passed": true,
+      "evidence": "Item 2 in the High severity section: \"claim `Get()` 'returns ... an empty string' ... `sessions_.at(session_id)` ... throws `std::out_of_range` ... the code explicitly throws `std::out_of_range`\"; second finding overall, near the top."
+    },
+    {
+      "text": "Report flags the nonexistent 'timeout_s' parameter in Get()'s comment",
+      "passed": true,
+      "evidence": "Item 1: \"`Get()` header comment documents a parameter that does not exist ... The function has no `timeout_s` parameter ... a stale comment left over from an earlier signature.\""
+    },
+    {
+      "text": "Report flags the header comment duplicated into the .cc as a wrong-place/drift problem",
+      "passed": true,
+      "evidence": "Item 9: \"Duplicated declaration comment on `Get()`'s definition (`session_store.cc:7-8`) ... Duplicating doc comments invites drift — which has already happened here ... The contract belongs in the header only.\""
+    },
+    {
+      "text": "Report flags the undocumented ttl_s_ negative-value sentinel (never expires)",
+      "passed": true,
+      "evidence": "Item 6: \"The implementation checks `ttl_s_ >= 0` before expiring ... meaning a negative TTL makes sessions immortal. The constructor comment ... says nothing about this.\""
+    },
+    {
+      "text": "Report flags Get()'s undocumented side effect of evicting the expired entry on read",
+      "passed": true,
+      "evidence": "Item 3: \"Calling `Get()` on an expired session silently evicts it from the store (mutating state) and throws. Neither the eviction side effect nor the throwing contract is mentioned anywhere.\""
+    },
+    {
+      "text": "Report flags the Author: line for removal",
+      "passed": true,
+      "evidence": "Item 13: \"`// Author: bob@example.com` — author attributions in file headers are discouraged ... because they go stale; version control tracks authorship.\""
+    },
+    {
+      "text": "Report flags Delete()'s imperative mood / missing period",
+      "passed": true,
+      "evidence": "Item 11: \"'Delete the session and return whether it existed' uses the imperative mood and lacks a terminating period.\""
+    },
+    {
+      "text": "Report flags the commented-out code in Put() and recommends deletion",
+      "passed": true,
+      "evidence": "Item 4: \"The 'old implementation kept for reference' block is dead code preserved in comments. Version control is the place for history\" — flags it and recommends it not remain (removal via version control history)."
+    },
+    {
+      "text": "Report flags the malformed TODO above Purge()",
+      "passed": true,
+      "evidence": "Item 5: \"`// TODO fix this later` violates common TODO conventions ... it names no owner, no bug/issue reference, and ... gives no hint of what is broken in `Purge()`.\""
+    },
+    {
+      "text": "Report flags '/* notify */ false' as not conforming to /*param_name=*/value form",
+      "passed": true,
+      "evidence": "Item 7: \"`Evict(session_id, /* notify */ false);` uses the wrong spacing/format ... The conventional (clang-tidy/Google) form is `/*notify=*/false`.\""
+    },
+    {
+      "text": "Findings ordered by severity: wrong/contradictory comments before missing contracts before formatting noise",
+      "passed": false,
+      "evidence": "The Medium tier puts noise/formatting items before missing-contract items: commented-out code (item 4) and malformed TODO (item 5) rank above the undocumented ttl_s sentinel (item 6), and the /*notify=*/ format issue (item 7) ranks above undocumented Evict() (item 8) — missing contracts do not precede formatting noise."
+    },
+    {
+      "text": "Report gives file/line references and does not modify the sources",
+      "passed": true,
+      "evidence": "Every item cites file:line (e.g. `session_store.h:15-18`, `session_store.cc:32`); report states 'No code was changed' and both source files still contain all planted defects."
+    }
+  ],
+  "summary": { "passed": 11, "total": 12, "notes": "Finds all planted defects with good line references and unmodified sources, but its severity ordering interleaves formatting noise (dead code, TODO, argument-comment format) above missing-contract findings, violating the required wrong > missing > noise ordering." }
+}

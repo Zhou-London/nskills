@@ -1,0 +1,50 @@
+{
+  "config": "with_skill_cc2",
+  "expectations": [
+    {
+      "text": "TokenBucket class comment in the .h says what the class is for and states its thread-safety guarantee explicitly",
+      "passed": true,
+      "evidence": "Class comment explains the token-bucket model and has an explicit paragraph: \"Thread safety: fully thread-safe. Any number of threads may call Acquire and TryAcquire concurrently on the same instance.\" plus fairness and lifetime caveats."
+    },
+    {
+      "text": "Every public method declaration in the .h has a contract comment: what it does, parameter meaning/units, return value semantics",
+      "passed": true,
+      "evidence": "Ctor, Acquire, TryAcquire, capacity(), refill_rate(), and even the deleted copy ops all carry contract comments, e.g. \"Constructs a bucket that holds at most `capacity` tokens and refills at `refill_rate` tokens per second.\""
+    },
+    {
+      "text": "Acquire documents its blocking semantics (and timeout behavior if a timeout is offered); TryAcquire documents True/False semantics and that nothing is consumed on failure",
+      "passed": true,
+      "evidence": "Acquire: \"Blocks the calling thread until `n` tokens are available... Never fails and never times out.\" TryAcquire: \"Returns true and consumes exactly `n` tokens if at least that many are currently available; otherwise returns false and consumes nothing.\""
+    },
+    {
+      "text": "Units are documented for rates and durations (tokens per second, seconds)",
+      "passed": true,
+      "evidence": "\"refills at `refill_rate` tokens per second\" (ctor), \"// Refill rate in tokens per second; > 0.\" (member), \"the long-run admission rate never exceeds `refill_rate` tokens per second\" (class comment)."
+    },
+    {
+      "text": "Function comments are third-person declarative with proper punctuation",
+      "passed": true,
+      "evidence": "All function comments use third-person verbs with terminal periods: \"Constructs a bucket...\", \"Blocks the calling thread...\", \"Attempts to consume...\", \"Returns the bucket's maximum token count...\", \"Adds tokens accrued...\""
+    },
+    {
+      "text": "The .cc does not duplicate the .h contract comments; its comments explain implementation choices (e.g. why sleeping outside the lock / condition-variable usage)",
+      "passed": true,
+      "evidence": ".cc comments are implementation-focused: file comment describes the lazy-refill strategy, RefillLocked explains the clock guard and why last_refill_ advances when capped, and Acquire explains deadline-based cv_.wait_for (\"tokens accrue from the passage of time alone, so no other thread will necessarily signal us\") and the one-tick minimum wait."
+    },
+    {
+      "text": "No comments that restate the code; no Author: lines; // style used consistently",
+      "passed": true,
+      "evidence": "No Author: lines (license boilerplate only); // style used throughout including the file headers; comments explain rationale (e.g. why available_ is a double) rather than restating statements."
+    },
+    {
+      "text": "If any call site passes a bare literal argument, it uses the /*param_name=*/value comment form (vacuously true if no such call exists)",
+      "passed": true,
+      "evidence": "The usage example annotates ambiguous literals: \"TokenBucket bucket(/*capacity=*/10, /*refill_rate=*/100.0);\". Remaining literals (example's Acquire(1), which has a trailing explanatory comment; Clock::duration(1)) are single-argument calls whose meaning is evident, not ambiguous bare-literal sites."
+    }
+  ],
+  "summary": {
+    "passed": 8,
+    "total": 8,
+    "notes": "Full-detail CC2 output with exhaustive header contracts (thread safety, fairness, lifetime, preconditions), units throughout, and .cc comments confined to implementation rationale."
+  }
+}

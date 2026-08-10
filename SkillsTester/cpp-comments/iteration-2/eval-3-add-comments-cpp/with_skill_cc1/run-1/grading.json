@@ -1,0 +1,65 @@
+{
+  "config": "with_skill_cc1",
+  "expectations": [
+    {
+      "text": "Contract comments live at the declarations in retry_queue.h; the .cc does not duplicate them (any .cc comments explain how/why, not restate the contract)",
+      "passed": true,
+      "evidence": "All contracts are in the .h; the only .cc comments are implementation notes: 'Exponential backoff: delay doubles with each failure...' and 'Erase while iterating; erase() returns the next valid iterator.'"
+    },
+    {
+      "text": "Function comments are third-person declarative ('Schedules...', 'Returns...'), not imperative ('Schedule...')",
+      "passed": true,
+      "evidence": "'Adds a task that is ready immediately...', 'Returns the time (seconds)...', 'Records a failure for the task...', 'Removes and returns all tasks...' — all third-person."
+    },
+    {
+      "text": "Ownership of the raw `payload` pointer is documented (the queue does not take ownership / caller keeps ownership and must keep it alive)",
+      "passed": true,
+      "evidence": "Schedule: 'Does not take ownership of `payload`.' and Entry field: 'void* payload;  // Not owned.'"
+    },
+    {
+      "text": "NextReadyAt's -1.0 sentinel (task not pending) is documented",
+      "passed": true,
+      "evidence": "'Returns the time (seconds) at which the task becomes ready, or -1.0 if `task_id` is not queued.'"
+    },
+    {
+      "text": "MarkFailed's std::nullopt ambiguity is documented: returned both when task_id is unknown AND when the task exhausted max_attempts and was dropped",
+      "passed": true,
+      "evidence": "'Returns nullopt if `task_id` is unknown or the task reached max_attempts and was dropped.' — both cases stated."
+    },
+    {
+      "text": "DrainReady documents that drained tasks are removed from the queue",
+      "passed": true,
+      "evidence": "'Removes and returns all tasks whose ready time is at or before `now_s`. Removed tasks are forgotten; re-add them with Schedule to retry again.'"
+    },
+    {
+      "text": "The class has a comment saying what it is for (usage example or thread-safety/lifetime notes are a plus)",
+      "passed": true,
+      "evidence": "'Tracks tasks awaiting retry with exponential backoff... Not thread-safe; callers must synchronize externally.'"
+    },
+    {
+      "text": "Member variables with non-obvious semantics are commented: base_delay_s_ units (seconds), Entry fields (ready_at_s meaning); no comment merely restates a name",
+      "passed": false,
+      "evidence": "Entry fields are commented (payload '// Not owned.', ready_at_s '// Earliest time (seconds) the task may be drained.'), but `int max_attempts_;` and `double base_delay_s_;` (lines 42-43) carry no comments at all — base_delay_s_'s seconds unit is documented nowhere as required."
+    },
+    {
+      "text": "Comments use // style consistently; no Author: lines; no comments that restate the code (e.g. '// increment failures')",
+      "passed": true,
+      "evidence": "All comments are // style; no Author lines; every comment adds semantics (e.g. '// Queued tasks keyed by task id.' notes the key, no literal code restatements)."
+    },
+    {
+      "text": "Every comment block is at most 3 sentences",
+      "passed": true,
+      "evidence": "Longest blocks: class comment = 2 sentences; Schedule = 3 ('Adds a task...' / 'Returns false...' / 'Does not take ownership...'); MarkFailed = 2; DrainReady = 2; all .cc comments are 1 sentence."
+    },
+    {
+      "text": "No usage-example code blocks inside comments",
+      "passed": true,
+      "evidence": "No example code appears in any comment in either file."
+    }
+  ],
+  "summary": {
+    "passed": 10,
+    "total": 11,
+    "notes": "Concise, accurate, well-tiered comments meeting the CC1 length limits, but max_attempts_ and base_delay_s_ are left entirely uncommented, so the base_delay_s_ units requirement fails."
+  }
+}
