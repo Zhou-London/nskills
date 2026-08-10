@@ -1,0 +1,51 @@
+{
+  "run_id": "eval-2-with_skill",
+  "expectations": [
+    {
+      "text": "Module docstring with one-line summary and usage example",
+      "passed": true,
+      "evidence": "Lines 1-15: summary + 'Typical usage example:' block."
+    },
+    {
+      "text": "Class docstring includes an Attributes: section",
+      "passed": true,
+      "evidence": "Lines 31-34: rate and capacity documented under Attributes:."
+    },
+    {
+      "text": "acquire/try_acquire have Args:/Returns:/Raises: sections",
+      "passed": true,
+      "evidence": "Both methods carry all three sections; __init__ documents ValueError too."
+    },
+    {
+      "text": "All \"\"\" docstrings with descriptive first lines ending in a period",
+      "passed": true,
+      "evidence": "'Takes n tokens, blocking...', 'Initializes a full bucket.', etc."
+    },
+    {
+      "text": "Docstrings describe semantics without repeating annotated types",
+      "passed": true,
+      "evidence": "Args describe meaning and units ('Refill rate in tokens per second'), never 'float'/'bool' restated."
+    },
+    {
+      "text": "try_acquire Returns explains True/False; acquire documents blocking behavior",
+      "passed": true,
+      "evidence": "try_acquire: 'Nothing is consumed on failure'; acquire: blocking, timeout, and unfair-wakeup caveat documented."
+    },
+    {
+      "text": "Inline comments follow spacing rules and explain intent",
+      "passed": true,
+      "evidence": "Block comments only, all intent-bearing ('Sleep outside the lock so other threads can take or return tokens')."
+    },
+    {
+      "text": "Thread-safety stance stated",
+      "passed": true,
+      "evidence": "Class docstring line 28: 'All methods are safe to call from multiple threads.'"
+    }
+  ],
+  "summary": {
+    "passed": 8,
+    "failed": 0,
+    "total": 8,
+    "pass_rate": 1.0
+  }
+}

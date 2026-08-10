@@ -1,0 +1,51 @@
+{
+  "run_id": "eval-2-without_skill",
+  "expectations": [
+    {
+      "text": "Module docstring with one-line summary and usage example",
+      "passed": true,
+      "evidence": "Lines 1-48: summary, algorithm description, three usage examples."
+    },
+    {
+      "text": "Class docstring includes an Attributes: section",
+      "passed": true,
+      "evidence": "Lines 64-67: rate and capacity under Attributes:."
+    },
+    {
+      "text": "acquire/try_acquire have Args:/Returns:/Raises: sections",
+      "passed": true,
+      "evidence": "All three sections present on both methods and __init__."
+    },
+    {
+      "text": "All \"\"\" docstrings with descriptive first lines ending in a period",
+      "passed": true,
+      "evidence": "'Acquires ``n`` tokens, blocking...', 'Attempts to acquire...', all with periods."
+    },
+    {
+      "text": "Docstrings describe semantics without repeating annotated types",
+      "passed": true,
+      "evidence": "Semantics-focused descriptions; no bare type restatement. Note: heavy Sphinx/RST markup (``x``, :meth:, ::) rather than plain Google-style prose, and a nonstandard 'Thread safety:' section name."
+    },
+    {
+      "text": "try_acquire Returns explains True/False; acquire documents blocking behavior",
+      "passed": true,
+      "evidence": "Both documented, including 'no tokens are consumed on failure'."
+    },
+    {
+      "text": "Inline comments follow spacing rules and explain intent",
+      "passed": true,
+      "evidence": "Block comments explain condition-variable rationale; no code-restating comments."
+    },
+    {
+      "text": "Thread-safety stance stated",
+      "passed": true,
+      "evidence": "Class docstring has a 'Thread safety:' section (nonstandard section name, but the information is present)."
+    }
+  ],
+  "summary": {
+    "passed": 8,
+    "failed": 0,
+    "total": 8,
+    "pass_rate": 1.0
+  }
+}

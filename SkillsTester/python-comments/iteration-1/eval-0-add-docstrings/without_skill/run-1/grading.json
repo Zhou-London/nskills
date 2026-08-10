@@ -1,0 +1,56 @@
+{
+  "run_id": "eval-0-without_skill",
+  "expectations": [
+    {
+      "text": "All docstrings use triple double quotes",
+      "passed": true,
+      "evidence": "Every docstring uses \"\"\"."
+    },
+    {
+      "text": "Module, class, and every public method have a docstring with proper summary-line structure",
+      "passed": true,
+      "evidence": "Module, class, and all 5 methods documented with summary line + blank line."
+    },
+    {
+      "text": "First lines are descriptive, not imperative",
+      "passed": true,
+      "evidence": "'Initializes...', 'Adds...', 'Returns...', 'Records...', 'Yields...'."
+    },
+    {
+      "text": "next_ready_at documents the -1.0 sentinel",
+      "passed": true,
+      "evidence": "Line 71: 'or -1.0 if the task is not pending.'"
+    },
+    {
+      "text": "mark_failed documents KeyError and the None-means-dropped semantics",
+      "passed": true,
+      "evidence": "Lines 89-94: Returns covers None = dropped; Raises: KeyError."
+    },
+    {
+      "text": "drain_ready uses Yields: and notes drained tasks are removed",
+      "passed": true,
+      "evidence": "Lines 113-117: Yields: section states 'Yielded tasks are removed from the queue'."
+    },
+    {
+      "text": "schedule's Returns explains True/False semantics",
+      "passed": true,
+      "evidence": "Lines 54-55: 'True if the task was scheduled, False if...already pending.'"
+    },
+    {
+      "text": "Args sections state expected types (code is unannotated) with consistent indentation",
+      "passed": false,
+      "evidence": "Types are largely omitted: 'task_id: Unique identifier', 'payload: Arbitrary data', 'max_attempts: Maximum failed attempts' — no stated type for unannotated parameters. Also uses Sphinx-style ``markup`` rather than plain Google-style prose."
+    },
+    {
+      "text": "No comments that merely restate the code",
+      "passed": false,
+      "evidence": "Line 102 '# Exponential backoff: delay doubles with each failed attempt.' restates what the __init__ docstring and the adjacent formula already say."
+    }
+  ],
+  "summary": {
+    "passed": 7,
+    "failed": 2,
+    "total": 9,
+    "pass_rate": 0.7778
+  }
+}

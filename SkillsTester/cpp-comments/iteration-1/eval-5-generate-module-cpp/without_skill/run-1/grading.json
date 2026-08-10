@@ -1,0 +1,14 @@
+{
+  "run_id": "eval-5-without_skill",
+  "expectations": [
+    {"text": "Class comment states purpose and thread-safety guarantee", "passed": true, "evidence": "File comment: 'Thread safety: all public methods are safe to call concurrently'; class comment explains the lazy-refill design."},
+    {"text": "Every public method declaration has a contract comment", "passed": true, "evidence": "Constructor, Acquire, TryAcquire, AvailableTokens, and accessors all documented."},
+    {"text": "Acquire documents blocking; TryAcquire documents true/false and nothing-consumed-on-failure", "passed": true, "evidence": "Acquire documents blocking, capacity clamping, sleep-not-spin; TryAcquire: 'false if there were not enough tokens (bucket state is unchanged).'"},
+    {"text": "Units documented for rates and durations", "passed": true, "evidence": "'Tokens added per second (> 0)', elapsed 'in (fractional) seconds'."},
+    {"text": "Third-person declarative with punctuation", "passed": true, "evidence": "'Constructs...', 'Blocks...', 'Attempts...', 'Returns...'."},
+    {"text": ".cc explains implementation choices without duplicating .h contracts", "passed": true, "evidence": "No .h contract duplicated; .cc comments cover refill capping rationale, deficit-sleep computation, spurious wakeups."},
+    {"text": "No restating comments; no Author lines; consistent // style", "passed": false, "evidence": "Two comments restate adjacent code: 'return;  // Nothing to acquire.' and 'return true;  // Nothing to acquire; trivially succeeds.' Also uses Python-docstring-style 'Args:'/'Returns:' sections inside C++ comments and '// rate_limiter.h' filename headers — non-idiomatic for Google C++ prose comments."},
+    {"text": "Bare literal arguments use /*param=*/ form", "passed": true, "evidence": "Usage example uses /*capacity=*/100.0, /*refill_rate=*/50.0; no unannotated literal call sites."}
+  ],
+  "summary": {"passed": 7, "failed": 1, "total": 8, "pass_rate": 0.875}
+}

@@ -1,0 +1,18 @@
+{
+  "run_id": "eval-4-with_skill",
+  "expectations": [
+    {"text": "Identifies Get()'s empty-string-vs-throw contradiction at/near the top", "passed": true, "evidence": "Finding #1, first section, called 'the most dangerous item in this review'; traces both throw paths."},
+    {"text": "Flags nonexistent 'timeout_s' parameter", "passed": true, "evidence": "Finding #2, also notes the real now_s parameter is undocumented."},
+    {"text": "Flags .h comment duplicated into .cc as wrong-place/drift", "passed": true, "evidence": "Finding #9: 'the live example of duplicated comments drifting, one of them lying' — notes the copy is the wrong version."},
+    {"text": "Flags undocumented ttl_s_ negative sentinel", "passed": true, "evidence": "Finding #4: negative ttl means never-expires, plus the ttl==0 boundary."},
+    {"text": "Flags Get()'s undocumented eviction-on-read side effect", "passed": true, "evidence": "Finding #6: read mutates the store (Evict on expiry, lookup_count_ increment)."},
+    {"text": "Flags Author: line", "passed": true, "evidence": "Finding #10, with the version-control rationale and a note about the missing license header."},
+    {"text": "Flags Delete()'s imperative mood / missing period", "passed": true, "evidence": "Finding #15 with the corrected wording."},
+    {"text": "Flags commented-out code for deletion", "passed": true, "evidence": "Finding #11, plus the observation that it hints at an undocumented semantic change in Put."},
+    {"text": "Flags malformed TODO", "passed": true, "evidence": "Finding #12: no context reference, no colon, open-ended."},
+    {"text": "Flags '/* notify */ false' as wrong argument-comment form", "passed": true, "evidence": "Finding #13: must be /*notify=*/false for clang-tidy verification."},
+    {"text": "Ordered wrong > missing > noise", "passed": true, "evidence": "Four sections exactly mirroring the checklist pass order."},
+    {"text": "Line references; sources unmodified", "passed": true, "evidence": "File:line on every finding; no code changes. Bonus findings beyond the planted list: missing thread-safety statement (#5), undocumented Evict/notify (#7), thin class comment (#8)."}
+  ],
+  "summary": {"passed": 12, "failed": 0, "total": 12, "pass_rate": 1.0}
+}

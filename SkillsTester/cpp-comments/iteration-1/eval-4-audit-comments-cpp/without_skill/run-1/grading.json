@@ -1,0 +1,18 @@
+{
+  "run_id": "eval-4-without_skill",
+  "expectations": [
+    {"text": "Identifies Get()'s empty-string-vs-throw contradiction at/near the top", "passed": true, "evidence": "Finding #1 in the top severity tier, listed first with both throw paths."},
+    {"text": "Flags nonexistent 'timeout_s' parameter", "passed": true, "evidence": "Finding #2, also notes now_s is undocumented."},
+    {"text": "Flags .h comment duplicated into .cc as wrong-place/drift", "passed": true, "evidence": "Finding #3: declaration-site comments should not be repeated at the definition; drift noted."},
+    {"text": "Flags undocumented ttl_s_ negative sentinel", "passed": true, "evidence": "Finding #10 mentions the ttl_s_ < 0 never-expires convention is written nowhere — though buried in the lowest tier."},
+    {"text": "Flags Get()'s undocumented eviction-on-read side effect", "passed": false, "evidence": "The eviction is mentioned only descriptively while explaining finding #1's throw path; the report never flags 'read mutates the store' as a missing piece of interface contract."},
+    {"text": "Flags Author: line", "passed": true, "evidence": "Finding #11."},
+    {"text": "Flags Delete()'s imperative mood / missing period", "passed": true, "evidence": "Finding #8 with corrected wording."},
+    {"text": "Flags commented-out code for deletion", "passed": true, "evidence": "Finding #4."},
+    {"text": "Flags malformed TODO", "passed": true, "evidence": "Finding #5."},
+    {"text": "Flags '/* notify */ false' as wrong argument-comment form", "passed": true, "evidence": "Finding #6, citing bugprone-argument-comment."},
+    {"text": "Ordered wrong > missing > noise", "passed": false, "evidence": "Contradictions are correctly on top, but missing-contract findings (ttl sentinel, Evict semantics — finding #10) are ranked in the lowest tier, below formatting items like the TODO and /*param=*/ form; the harm ordering (missing contracts before mechanics) is inverted in the middle."},
+    {"text": "Line references; sources unmodified", "passed": true, "evidence": "File:line references and a summary table; no code changes."}
+  ],
+  "summary": {"passed": 10, "failed": 2, "total": 12, "pass_rate": 0.8333}
+}

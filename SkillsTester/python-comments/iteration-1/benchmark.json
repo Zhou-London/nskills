@@ -1,0 +1,460 @@
+{
+  "metadata": {
+    "skill_name": "python-comments",
+    "skill_path": "<path/to/skill>",
+    "executor_model": "<model-name>",
+    "analyzer_model": "<model-name>",
+    "timestamp": "2026-08-10T07:04:54Z",
+    "evals_run": [
+      0,
+      1,
+      2
+    ],
+    "runs_per_configuration": 3
+  },
+  "runs": [
+    {
+      "eval_id": 0,
+      "configuration": "with_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1.0,
+        "passed": 9,
+        "failed": 0,
+        "total": 9,
+        "time_seconds": 71.8,
+        "tokens": 25945,
+        "tool_calls": 0,
+        "errors": 0
+      },
+      "expectations": [
+        {
+          "text": "All docstrings use triple double quotes",
+          "passed": true,
+          "evidence": "Every docstring in the file uses \"\"\"; no ''' anywhere."
+        },
+        {
+          "text": "Module, class, and every public method have a docstring with proper summary-line structure",
+          "passed": true,
+          "evidence": "Module (line 1), class (line 21), and all 5 methods documented; each multi-line docstring has a one-sentence first line ending in a period followed by a blank line."
+        },
+        {
+          "text": "First lines are descriptive, not imperative",
+          "passed": true,
+          "evidence": "'Initializes...', 'Adds...', 'Returns...', 'Records...', 'Yields...' throughout."
+        },
+        {
+          "text": "next_ready_at documents the -1.0 sentinel",
+          "passed": true,
+          "evidence": "Line 82: 'or -1.0 if task_id is not pending.'"
+        },
+        {
+          "text": "mark_failed documents KeyError and the None-means-dropped semantics",
+          "passed": true,
+          "evidence": "Lines 102-106: Returns explains None = exhausted attempts; Raises: KeyError if task_id not pending."
+        },
+        {
+          "text": "drain_ready uses Yields: and notes drained tasks are removed",
+          "passed": true,
+          "evidence": "Lines 120-131: 'Yielded tasks are no longer pending...' plus a Yields: section."
+        },
+        {
+          "text": "schedule's Returns explains True/False semantics",
+          "passed": true,
+          "evidence": "Lines 65-66: 'True if the task was added, False if task_id was already pending (existing entry left untouched).'"
+        },
+        {
+          "text": "Args sections state expected types (code is unannotated) with consistent indentation",
+          "passed": true,
+          "evidence": "'An integer >= 1', 'A float', 'A hashable identifier', 'An optional float timestamp'; 2-space hanging indents used consistently."
+        },
+        {
+          "text": "No comments that merely restate the code",
+          "passed": true,
+          "evidence": "Only two comments: the _pending entry structure (line 51) and the key-snapshot rationale (line 134) — both carry non-obvious intent."
+        }
+      ],
+      "notes": []
+    },
+    {
+      "eval_id": 1,
+      "configuration": "with_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1.0,
+        "passed": 11,
+        "failed": 0,
+        "total": 11,
+        "time_seconds": 73.2,
+        "tokens": 26637,
+        "tool_calls": 0,
+        "errors": 0
+      },
+      "expectations": [
+        {
+          "text": "Identifies get()'s None-vs-KeyError contradiction and ranks it at/near the top",
+          "passed": true,
+          "evidence": "Section I.1, explicitly called 'the most harmful issue in the file', listed first."
+        },
+        {
+          "text": "Flags nonexistent 'timeout' parameter in put()'s docstring",
+          "passed": true,
+          "evidence": "Section I.2: documents ghost 'timeout' param and the undocumented real param 'data'."
+        },
+        {
+          "text": "Flags iter_expired() generator wrongly documented as returning a list",
+          "passed": true,
+          "evidence": "Section I.3: yield-based generator vs 'a list' claim; notes Yields: is required."
+        },
+        {
+          "text": "Flags 'Arguments:' as wrong section name",
+          "passed": true,
+          "evidence": "Section IV.2: 'Arguments:' should be 'Args:' (tools parse standard names)."
+        },
+        {
+          "text": "Flags ''' quotes on the class docstring",
+          "passed": true,
+          "evidence": "Section IV.1: triple-single quotes should be \"\"\"; also flags the docstring as a no-information restatement."
+        },
+        {
+          "text": "Flags imperative mood / missing period on delete()",
+          "passed": true,
+          "evidence": "Section III.1 (imperative 'Delete the...') and IV.3 (missing terminal period)."
+        },
+        {
+          "text": "Flags commented-out code and recommends deletion",
+          "passed": true,
+          "evidence": "Section IV.6: 'version control remembers it, should be deleted'."
+        },
+        {
+          "text": "Flags the malformed TODO above purge()",
+          "passed": true,
+          "evidence": "Section IV.7: no context reference, no colon, no completion condition."
+        },
+        {
+          "text": "Flags purge() missing a required docstring",
+          "passed": true,
+          "evidence": "Section II.3: public non-trivial method with undocumented return value."
+        },
+        {
+          "text": "Findings ordered by severity: wrong > missing > noise",
+          "passed": true,
+          "evidence": "Report is structured in four passes: Wrong → Missing contracts → Register/placement → Format & noise, matching the checklist order."
+        },
+        {
+          "text": "Gives line references and does not modify the source",
+          "passed": true,
+          "evidence": "Every finding carries line numbers; source file untouched. Bonus: also caught the undocumented read-side-effect of get() deleting expired sessions (planted-defect list exceeded)."
+        }
+      ],
+      "notes": []
+    },
+    {
+      "eval_id": 2,
+      "configuration": "with_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1.0,
+        "passed": 8,
+        "failed": 0,
+        "total": 8,
+        "time_seconds": 67.4,
+        "tokens": 24172,
+        "tool_calls": 0,
+        "errors": 0
+      },
+      "expectations": [
+        {
+          "text": "Module docstring with one-line summary and usage example",
+          "passed": true,
+          "evidence": "Lines 1-15: summary + 'Typical usage example:' block."
+        },
+        {
+          "text": "Class docstring includes an Attributes: section",
+          "passed": true,
+          "evidence": "Lines 31-34: rate and capacity documented under Attributes:."
+        },
+        {
+          "text": "acquire/try_acquire have Args:/Returns:/Raises: sections",
+          "passed": true,
+          "evidence": "Both methods carry all three sections; __init__ documents ValueError too."
+        },
+        {
+          "text": "All \"\"\" docstrings with descriptive first lines ending in a period",
+          "passed": true,
+          "evidence": "'Takes n tokens, blocking...', 'Initializes a full bucket.', etc."
+        },
+        {
+          "text": "Docstrings describe semantics without repeating annotated types",
+          "passed": true,
+          "evidence": "Args describe meaning and units ('Refill rate in tokens per second'), never 'float'/'bool' restated."
+        },
+        {
+          "text": "try_acquire Returns explains True/False; acquire documents blocking behavior",
+          "passed": true,
+          "evidence": "try_acquire: 'Nothing is consumed on failure'; acquire: blocking, timeout, and unfair-wakeup caveat documented."
+        },
+        {
+          "text": "Inline comments follow spacing rules and explain intent",
+          "passed": true,
+          "evidence": "Block comments only, all intent-bearing ('Sleep outside the lock so other threads can take or return tokens')."
+        },
+        {
+          "text": "Thread-safety stance stated",
+          "passed": true,
+          "evidence": "Class docstring line 28: 'All methods are safe to call from multiple threads.'"
+        }
+      ],
+      "notes": []
+    },
+    {
+      "eval_id": 0,
+      "configuration": "without_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 0.7778,
+        "passed": 7,
+        "failed": 2,
+        "total": 9,
+        "time_seconds": 41.1,
+        "tokens": 18655,
+        "tool_calls": 0,
+        "errors": 0
+      },
+      "expectations": [
+        {
+          "text": "All docstrings use triple double quotes",
+          "passed": true,
+          "evidence": "Every docstring uses \"\"\"."
+        },
+        {
+          "text": "Module, class, and every public method have a docstring with proper summary-line structure",
+          "passed": true,
+          "evidence": "Module, class, and all 5 methods documented with summary line + blank line."
+        },
+        {
+          "text": "First lines are descriptive, not imperative",
+          "passed": true,
+          "evidence": "'Initializes...', 'Adds...', 'Returns...', 'Records...', 'Yields...'."
+        },
+        {
+          "text": "next_ready_at documents the -1.0 sentinel",
+          "passed": true,
+          "evidence": "Line 71: 'or -1.0 if the task is not pending.'"
+        },
+        {
+          "text": "mark_failed documents KeyError and the None-means-dropped semantics",
+          "passed": true,
+          "evidence": "Lines 89-94: Returns covers None = dropped; Raises: KeyError."
+        },
+        {
+          "text": "drain_ready uses Yields: and notes drained tasks are removed",
+          "passed": true,
+          "evidence": "Lines 113-117: Yields: section states 'Yielded tasks are removed from the queue'."
+        },
+        {
+          "text": "schedule's Returns explains True/False semantics",
+          "passed": true,
+          "evidence": "Lines 54-55: 'True if the task was scheduled, False if...already pending.'"
+        },
+        {
+          "text": "Args sections state expected types (code is unannotated) with consistent indentation",
+          "passed": false,
+          "evidence": "Types are largely omitted: 'task_id: Unique identifier', 'payload: Arbitrary data', 'max_attempts: Maximum failed attempts' — no stated type for unannotated parameters. Also uses Sphinx-style ``markup`` rather than plain Google-style prose."
+        },
+        {
+          "text": "No comments that merely restate the code",
+          "passed": false,
+          "evidence": "Line 102 '# Exponential backoff: delay doubles with each failed attempt.' restates what the __init__ docstring and the adjacent formula already say."
+        }
+      ],
+      "notes": []
+    },
+    {
+      "eval_id": 1,
+      "configuration": "without_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1.0,
+        "passed": 11,
+        "failed": 0,
+        "total": 11,
+        "time_seconds": 66.2,
+        "tokens": 19531,
+        "tool_calls": 0,
+        "errors": 0
+      },
+      "expectations": [
+        {
+          "text": "Identifies get()'s None-vs-KeyError contradiction and ranks it at/near the top",
+          "passed": true,
+          "evidence": "Issue #1, in the high-severity tier, listed first."
+        },
+        {
+          "text": "Flags nonexistent 'timeout' parameter in put()'s docstring",
+          "passed": true,
+          "evidence": "Issue #2: ghost 'timeout' param, undocumented 'data'."
+        },
+        {
+          "text": "Flags iter_expired() generator wrongly documented as returning a list",
+          "passed": true,
+          "evidence": "Issue #3: yield-based generator vs 'a list'; notes single-pass/len() consequences."
+        },
+        {
+          "text": "Flags 'Arguments:' as wrong section name",
+          "passed": true,
+          "evidence": "Inside issue #2: 'Arguments:' vs 'Args:' inconsistency noted."
+        },
+        {
+          "text": "Flags ''' quotes on the class docstring",
+          "passed": true,
+          "evidence": "Issue #7: ''' vs \"\"\" inconsistency (cited via PEP 257)."
+        },
+        {
+          "text": "Flags imperative mood / missing period on delete()",
+          "passed": true,
+          "evidence": "Issue #9 (missing period) and #10 (imperative/third-person mixing, citing 'Delete the...')."
+        },
+        {
+          "text": "Flags commented-out code and recommends deletion",
+          "passed": true,
+          "evidence": "Issue #5: dead code, git keeps history, should delete."
+        },
+        {
+          "text": "Flags the malformed TODO above purge()",
+          "passed": true,
+          "evidence": "Issue #4: no owner/issue link, unclear referent."
+        },
+        {
+          "text": "Flags purge() missing a required docstring",
+          "passed": true,
+          "evidence": "Issue #4: public method with non-trivial behavior, no docstring."
+        },
+        {
+          "text": "Findings ordered by severity: wrong > missing > noise",
+          "passed": true,
+          "evidence": "Three tiers (high/medium/low) with the three contradiction findings on top; summary table included."
+        },
+        {
+          "text": "Gives line references and does not modify the source",
+          "passed": true,
+          "evidence": "Line references throughout; file untouched. Note: unlike the with-skill run, did NOT surface get()'s read-side-effect of deleting expired sessions."
+        }
+      ],
+      "notes": []
+    },
+    {
+      "eval_id": 2,
+      "configuration": "without_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1.0,
+        "passed": 8,
+        "failed": 0,
+        "total": 8,
+        "time_seconds": 49.6,
+        "tokens": 19037,
+        "tool_calls": 0,
+        "errors": 0
+      },
+      "expectations": [
+        {
+          "text": "Module docstring with one-line summary and usage example",
+          "passed": true,
+          "evidence": "Lines 1-48: summary, algorithm description, three usage examples."
+        },
+        {
+          "text": "Class docstring includes an Attributes: section",
+          "passed": true,
+          "evidence": "Lines 64-67: rate and capacity under Attributes:."
+        },
+        {
+          "text": "acquire/try_acquire have Args:/Returns:/Raises: sections",
+          "passed": true,
+          "evidence": "All three sections present on both methods and __init__."
+        },
+        {
+          "text": "All \"\"\" docstrings with descriptive first lines ending in a period",
+          "passed": true,
+          "evidence": "'Acquires ``n`` tokens, blocking...', 'Attempts to acquire...', all with periods."
+        },
+        {
+          "text": "Docstrings describe semantics without repeating annotated types",
+          "passed": true,
+          "evidence": "Semantics-focused descriptions; no bare type restatement. Note: heavy Sphinx/RST markup (``x``, :meth:, ::) rather than plain Google-style prose, and a nonstandard 'Thread safety:' section name."
+        },
+        {
+          "text": "try_acquire Returns explains True/False; acquire documents blocking behavior",
+          "passed": true,
+          "evidence": "Both documented, including 'no tokens are consumed on failure'."
+        },
+        {
+          "text": "Inline comments follow spacing rules and explain intent",
+          "passed": true,
+          "evidence": "Block comments explain condition-variable rationale; no code-restating comments."
+        },
+        {
+          "text": "Thread-safety stance stated",
+          "passed": true,
+          "evidence": "Class docstring has a 'Thread safety:' section (nonstandard section name, but the information is present)."
+        }
+      ],
+      "notes": []
+    }
+  ],
+  "run_summary": {
+    "with_skill": {
+      "pass_rate": {
+        "mean": 1.0,
+        "stddev": 0.0,
+        "min": 1.0,
+        "max": 1.0
+      },
+      "time_seconds": {
+        "mean": 70.8,
+        "stddev": 3.0265,
+        "min": 67.4,
+        "max": 73.2
+      },
+      "tokens": {
+        "mean": 25584.6667,
+        "stddev": 1271.3915,
+        "min": 24172,
+        "max": 26637
+      }
+    },
+    "without_skill": {
+      "pass_rate": {
+        "mean": 0.9259,
+        "stddev": 0.1283,
+        "min": 0.7778,
+        "max": 1.0
+      },
+      "time_seconds": {
+        "mean": 52.3,
+        "stddev": 12.766,
+        "min": 41.1,
+        "max": 66.2
+      },
+      "tokens": {
+        "mean": 19074.3333,
+        "stddev": 439.1917,
+        "min": 18655,
+        "max": 19531
+      }
+    },
+    "delta": {
+      "pass_rate": "+0.07",
+      "time_seconds": "+18.5",
+      "tokens": "+6510"
+    }
+  },
+  "notes": [
+    "3 evals (add docstrings / audit planted defects / generate from scratch), 28 assertions: with_skill 28/28, without_skill 26/28 (92.6%).",
+    "Baseline losses concentrate in eval-0: unannotated parameters get no type statements in Args:, and one comment restates what the __init__ docstring already says ('# Exponential backoff: ...').",
+    "The baseline is strong on its own — the model writes Google-style docstrings by default, so most assertions do not discriminate. Register differences not covered by assertions: the baseline mixes in Sphinx/RST markup (``x``) and a nonstandard 'Thread safety:' section name — worth watching during manual review.",
+    "In the audit eval both sides found all 11 planted defects, but only with_skill surfaced a real unplanted issue: get()'s undocumented side effect of deleting expired sessions on read.",
+    "Cost: with_skill spends roughly 6.4k extra tokens per eval (reading SKILL.md).",
+    "Possible next-iteration improvement: add register assertions (e.g. ban RST markup in docstrings) to widen the gap vs the baseline."
+  ]
+}

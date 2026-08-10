@@ -1,0 +1,15 @@
+{
+  "eval_id": 2,
+  "eval_name": "generate-module",
+  "prompt": "Write a rate_limiter.py implementing a token-bucket rate limiter class TokenBucket, with a blocking acquire(n) and a non-blocking try_acquire(n). It must be fully documented.",
+  "assertions": [
+    "Module has a docstring with a one-line summary and a typical usage example",
+    "TokenBucket class docstring includes an Attributes: section documenting public attributes",
+    "acquire and try_acquire have docstrings with Args: and Returns: sections; Raises: present where the code raises for invalid input",
+    "All docstrings use triple double quotes with descriptive (not imperative) first lines ending in a period",
+    "With type annotations present, docstrings describe semantics without repeating the types",
+    "try_acquire's Returns: explains the True/False semantics; acquire documents its blocking behavior",
+    "Any inline comments are separated from code by at least two spaces and explain intent rather than restating code",
+    "Thread-safety behavior is stated in the class or module docstring (either safe or not — just stated)"
+  ]
+}

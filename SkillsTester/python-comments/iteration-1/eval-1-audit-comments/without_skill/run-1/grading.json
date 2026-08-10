@@ -1,0 +1,66 @@
+{
+  "run_id": "eval-1-without_skill",
+  "expectations": [
+    {
+      "text": "Identifies get()'s None-vs-KeyError contradiction and ranks it at/near the top",
+      "passed": true,
+      "evidence": "Issue #1, in the high-severity tier, listed first."
+    },
+    {
+      "text": "Flags nonexistent 'timeout' parameter in put()'s docstring",
+      "passed": true,
+      "evidence": "Issue #2: ghost 'timeout' param, undocumented 'data'."
+    },
+    {
+      "text": "Flags iter_expired() generator wrongly documented as returning a list",
+      "passed": true,
+      "evidence": "Issue #3: yield-based generator vs 'a list'; notes single-pass/len() consequences."
+    },
+    {
+      "text": "Flags 'Arguments:' as wrong section name",
+      "passed": true,
+      "evidence": "Inside issue #2: 'Arguments:' vs 'Args:' inconsistency noted."
+    },
+    {
+      "text": "Flags ''' quotes on the class docstring",
+      "passed": true,
+      "evidence": "Issue #7: ''' vs \"\"\" inconsistency (cited via PEP 257)."
+    },
+    {
+      "text": "Flags imperative mood / missing period on delete()",
+      "passed": true,
+      "evidence": "Issue #9 (missing period) and #10 (imperative/third-person mixing, citing 'Delete the...')."
+    },
+    {
+      "text": "Flags commented-out code and recommends deletion",
+      "passed": true,
+      "evidence": "Issue #5: dead code, git keeps history, should delete."
+    },
+    {
+      "text": "Flags the malformed TODO above purge()",
+      "passed": true,
+      "evidence": "Issue #4: no owner/issue link, unclear referent."
+    },
+    {
+      "text": "Flags purge() missing a required docstring",
+      "passed": true,
+      "evidence": "Issue #4: public method with non-trivial behavior, no docstring."
+    },
+    {
+      "text": "Findings ordered by severity: wrong > missing > noise",
+      "passed": true,
+      "evidence": "Three tiers (high/medium/low) with the three contradiction findings on top; summary table included."
+    },
+    {
+      "text": "Gives line references and does not modify the source",
+      "passed": true,
+      "evidence": "Line references throughout; file untouched. Note: unlike the with-skill run, did NOT surface get()'s read-side-effect of deleting expired sessions."
+    }
+  ],
+  "summary": {
+    "passed": 11,
+    "failed": 0,
+    "total": 11,
+    "pass_rate": 1.0
+  }
+}

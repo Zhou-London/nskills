@@ -1,0 +1,17 @@
+{
+  "eval_id": 3,
+  "eval_name": "add-comments-cpp",
+  "skill": "cpp-comments",
+  "prompt": "Add comments to retry_queue.h and retry_queue.cc: the class, the functions, and the member variables all need appropriate comments. Modify the files directly.",
+  "assertions": [
+    "Contract comments live at the declarations in retry_queue.h; the .cc does not duplicate them (any .cc comments explain how/why, not restate the contract)",
+    "Function comments are third-person declarative ('Schedules...', 'Returns...'), not imperative ('Schedule...')",
+    "Ownership of the raw `payload` pointer is documented (the queue does not take ownership / caller keeps ownership and must keep it alive)",
+    "NextReadyAt's -1.0 sentinel (task not pending) is documented",
+    "MarkFailed's std::nullopt ambiguity is documented: returned both when task_id is unknown AND when the task exhausted max_attempts and was dropped",
+    "DrainReady documents that drained tasks are removed from the queue",
+    "The class has a comment saying what it is for (usage example or thread-safety/lifetime notes are a plus)",
+    "Member variables with non-obvious semantics are commented: base_delay_s_ units (seconds), Entry fields (ready_at_s meaning); no comment merely restates a name",
+    "Comments use // style consistently; no Author: lines; no comments that restate the code (e.g. '// increment failures')"
+  ]
+}
