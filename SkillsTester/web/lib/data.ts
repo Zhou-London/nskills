@@ -30,13 +30,22 @@ export interface Assertion {
   evidence: string;
 }
 
+/** A file on disk shown in the UI; `path` is absolute so it can be opened. */
+export interface FileData {
+  name: string;
+  content: string;
+  path: string;
+}
+
 export interface RunData {
   assertions: Assertion[];
   passed: number;
   total: number;
   tokens: number | null;
   seconds: number | null;
-  outputs: { name: string; content: string }[];
+  /** Absolute path of the run's outputs/ directory. */
+  outputsDir: string;
+  outputs: FileData[];
 }
 
 export interface EvalData {
@@ -46,6 +55,8 @@ export interface EvalData {
   prompt: string;
   expectedOutput: string;
   files: string[];
+  /** The eval's input files (evals/files/...), for comparison against runs. */
+  inputs: FileData[];
   plantedDefects: string[];
   configs: Partial<Record<ConfigName, RunData>>;
 }
@@ -129,13 +140,13 @@ function loadRun(evalDir: string, config: ConfigName): RunData | null {
     evidence: String(e.evidence ?? ""),
   }));
   const timing = readJson(path.join(runDir, "timing.json"));
-  const outputs: { name: string; content: string }[] = [];
+  const outputs: FileData[] = [];
   const outDir = path.join(runDir, "outputs");
   if (fs.existsSync(outDir)) {
     for (const f of fs.readdirSync(outDir).sort()) {
       const fp = path.join(outDir, f);
       if (fs.statSync(fp).isFile()) {
-        outputs.push({ name: f, content: readText(fp) ?? "" });
+        outputs.push({ name: f, content: readText(fp) ?? "", path: fp });
       }
     }
   }
@@ -146,8 +157,20 @@ function loadRun(evalDir: string, config: ConfigName): RunData | null {
     total: grading.summary?.total ?? assertions.length,
     tokens: timing?.total_tokens ?? null,
     seconds: timing?.total_duration_seconds ?? null,
+    outputsDir: outDir,
     outputs,
   };
+}
+
+/** Loads an eval's input files; their paths are relative to the skill dir. */
+function loadInputs(skillDir: string, files: string[]): FileData[] {
+  const out: FileData[] = [];
+  for (const rel of files) {
+    const fp = path.join(skillDir, rel);
+    const content = readText(fp);
+    if (content !== null) out.push({ name: path.basename(rel), content, path: fp });
+  }
+  return out;
 }
 
 export function getSkillData(name: string): SkillData | null {
@@ -173,13 +196,15 @@ export function getSkillData(name: string): SkillData | null {
         const run = loadRun(evalDir, c);
         if (run) configs[c] = run;
       }
+      const files: string[] = fromEvalsJson?.files ?? [];
       evals.push({
         id: meta.eval_id ?? -1,
         evalName: meta.eval_name ?? d,
         dirName: d,
         prompt: meta.prompt ?? fromEvalsJson?.prompt ?? "",
         expectedOutput: fromEvalsJson?.expected_output ?? "",
-        files: fromEvalsJson?.files ?? [],
+        files,
+        inputs: loadInputs(skillDir, files),
         plantedDefects: meta.planted_defects ?? [],
         configs,
       });

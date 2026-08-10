@@ -33,7 +33,8 @@ export default function RootLayout({
             </div>
           </div>
         </nav>
-        <main className="shell">{children}</main>
+        {/* Pages own their own .shell so the eval review can go full width. */}
+        <main>{children}</main>
       </body>
     </html>
   );

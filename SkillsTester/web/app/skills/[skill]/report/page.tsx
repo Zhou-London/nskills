@@ -31,7 +31,7 @@ export default async function ReportPage({
   const baselinePct = baseline ? pct(baseline.passed, baseline.total) : null;
 
   return (
-    <>
+    <div className="shell">
       <h1 className="page-title">{data.name} — report</h1>
       <p className="page-sub">
         Iteration {data.iteration} · {data.evals.length} evals ·{" "}
@@ -175,6 +175,6 @@ export default async function ReportPage({
           </div>
         </>
       )}
-    </>
+    </div>
   );
 }

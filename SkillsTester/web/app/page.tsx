@@ -17,7 +17,7 @@ export default function Home() {
     .filter((s) => s !== null);
 
   return (
-    <>
+    <div className="shell">
       <h1 className="page-title">SkillsTester</h1>
       <p className="page-sub">
         Repeatable acceptance testing for Claude skills. Every skill runs the
@@ -72,6 +72,6 @@ export default function Home() {
           evals/evals.json.
         </p>
       )}
-    </>
+    </div>
   );
 }

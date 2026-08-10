@@ -1,5 +1,10 @@
 :root {
   color-scheme: light;
+  /* Reading pages stay narrow; the eval review opts into --wide so three
+     columns of code fit side by side. */
+  --shell: 1080px;
+  --wide: 1560px;
+  --cmt-ink: #0f7a52;
   --page: #f9f9f7;
   --surface: #fcfcfb;
   --ink: #0b0b0b;
@@ -20,6 +25,7 @@
 @media (prefers-color-scheme: dark) {
   :root {
     color-scheme: dark;
+    --cmt-ink: #56d39b;
     --page: #0d0d0d;
     --surface: #1a1a19;
     --ink: #ffffff;
@@ -56,9 +62,16 @@ a {
 }
 
 .shell {
-  max-width: 1080px;
+  max-width: var(--shell);
   margin: 0 auto;
   padding: 0 24px 80px;
+}
+.shell.wide {
+  max-width: var(--wide);
+}
+/* Keep the nav aligned with whatever width the page below it chose. */
+body:has(.shell.wide) .nav-inner {
+  max-width: var(--wide);
 }
 
 /* ---------- top nav ---------- */
@@ -70,7 +83,7 @@ a {
   border-bottom: 1px solid var(--border);
 }
 .nav-inner {
-  max-width: 1080px;
+  max-width: var(--shell);
   margin: 0 auto;
   padding: 14px 24px;
   display: flex;
@@ -314,13 +327,51 @@ a {
 }
 .config-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
   gap: 14px;
+  margin-top: 10px;
 }
 @media (max-width: 760px) {
   .config-grid {
     grid-template-columns: 1fr;
   }
+}
+
+/* Compact per-config summary row above the code columns. */
+.config-strip {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 14px;
+}
+.config-tile {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: 4px 12px 4px 10px;
+  font-size: 13px;
+}
+.config-name {
+  color: var(--ink-2);
+}
+.config-cost {
+  font-size: 12px;
+}
+.input-links {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  font-size: 12.5px;
+  margin-left: auto;
+}
+.input-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  color: var(--ink-2);
 }
 .config-col {
   border: 1px solid var(--border);
@@ -380,21 +431,231 @@ details summary:hover {
   font-size: 12.5px;
   margin-top: 2px;
 }
-pre.output {
+/* ---------- side-by-side output comparison ---------- */
+.cc {
+  margin: 4px 0 6px;
+}
+.cc-bar {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex-wrap: wrap;
+  padding-bottom: 10px;
+}
+.cc-bar-2 {
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 12px;
+  font-size: 12.5px;
+}
+.cc-tabs {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+.cc-tab {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 12.5px;
+  color: var(--ink-2);
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: 7px;
+  padding: 4px 10px;
+  cursor: pointer;
+}
+.cc-tab:hover {
+  color: var(--ink);
+  background: var(--page);
+}
+.cc-tab.active {
+  color: var(--ink);
+  background: var(--page);
+  border-color: var(--ink-2);
+  font-weight: 600;
+}
+.cc-toggles {
+  display: flex;
+  gap: 14px;
+  margin-left: auto;
+  font-size: 12.5px;
+  color: var(--ink-2);
+}
+.cc-toggles label {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  cursor: pointer;
+  user-select: none;
+}
+.cc-toggles label.disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+.cc-toggles input {
+  accent-color: var(--series-1);
+  margin: 0;
+}
+.cc-chips {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+.cc-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font: inherit;
+  font-size: 12.5px;
+  color: var(--ink);
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: 3px 11px;
+  cursor: pointer;
+}
+.cc-chip.off {
+  color: var(--muted);
+}
+.cc-chip.off .config-dot {
+  opacity: 0.3;
+}
+.cc-diffs {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-left: auto;
+  flex-wrap: wrap;
+}
+.cc-grid {
+  display: grid;
+  gap: 12px;
+  align-items: start;
+}
+@media (max-width: 900px) {
+  .cc-grid {
+    grid-template-columns: 1fr !important;
+  }
+}
+.cc-col {
+  min-width: 0;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 10px 10px 8px;
+}
+.cc-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  margin-bottom: 6px;
+}
+.cc-title {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.cc-head .file-actions {
+  margin-left: auto;
+}
+.cc-stats {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  font-size: 11.5px;
+  color: var(--muted);
+  margin-bottom: 8px;
+}
+.cc-stat b {
+  color: var(--ink-2);
+  font-weight: 600;
+}
+.cc-foot {
+  margin-top: 8px;
+}
+.cc-empty {
+  font-size: 12.5px;
+  padding: 12px 2px;
+}
+
+.code-pane {
   background: var(--page);
   border: 1px solid var(--border);
   border-radius: 8px;
-  padding: 12px;
+  padding: 10px 0;
   overflow: auto;
-  max-height: 420px;
+  max-height: 620px;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
   font-size: 12.5px;
-  line-height: 1.5;
+  line-height: 1.6;
+  tab-size: 2;
 }
-.file-name {
-  font-size: 12.5px;
-  color: var(--ink-2);
-  margin: 10px 0 4px;
+.code-line {
+  display: grid;
+  grid-template-columns: 40px minmax(0, 1fr);
+  gap: 10px;
+  padding-right: 10px;
+}
+.code-line.has-cmt {
+  background: color-mix(in srgb, var(--cmt-ink) 7%, transparent);
+}
+.code-line .ln {
+  color: var(--muted);
+  text-align: right;
+  user-select: none;
+  opacity: 0.7;
+}
+.code-line .lt {
+  /* Wrapping is the default: long comment prose must stay readable in a
+     narrow column. `.nowrap` on the grid turns it off. */
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+.cc-grid.nowrap .code-line .lt {
+  white-space: pre;
+}
+.cc-grid.nowrap .code-pane {
+  overflow-x: auto;
+}
+.seg-cmt {
+  color: var(--cmt-ink);
+}
+.code-gap {
+  color: var(--muted);
+  font-size: 11px;
+  padding: 3px 0 3px 50px;
+  border-top: 1px dashed var(--grid);
+  border-bottom: 1px dashed var(--grid);
+  margin: 3px 0;
+  user-select: none;
+}
+
+/* ---------- open-on-this-machine buttons ---------- */
+.file-actions {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+button.mini {
+  font: inherit;
+  font-size: 11.5px;
   font-weight: 600;
+  color: var(--ink-2);
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 2px 8px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+button.mini:hover {
+  color: var(--ink);
+  background: var(--page);
+  border-color: var(--ink-2);
+}
+.mini-note {
+  font-size: 11px;
+  color: var(--muted);
 }
 
 /* ---------- feedback ---------- */

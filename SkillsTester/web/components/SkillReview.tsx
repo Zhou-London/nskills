@@ -8,29 +8,41 @@ import {
   type ConfigName,
 } from "@/lib/configs";
 import type { EvalData } from "@/lib/data";
+import CodeCompare from "./CodeCompare";
+import { FileActions } from "./OpenLocal";
 
-function ConfigColumn({
+/** Compact per-config summary: pass count and cost, above the code columns. */
+function ConfigTile({
   config,
   run,
 }: {
   config: ConfigName;
-  run: EvalData["configs"][ConfigName];
+  run: NonNullable<EvalData["configs"][ConfigName]>;
 }) {
-  if (!run) {
-    return (
-      <div className="config-col">
-        <h4>
-          <span
-            className="config-dot"
-            style={{ background: CONFIG_COLORS[config] }}
-          />
-          {CONFIG_LABELS[config]}
-        </h4>
-        <p className="muted">No run recorded.</p>
-      </div>
-    );
-  }
   const allPass = run.passed === run.total;
+  return (
+    <div className="config-tile">
+      <span className="config-dot" style={{ background: CONFIG_COLORS[config] }} />
+      <span className="config-name">{CONFIG_LABELS[config]}</span>
+      <span className={`badge ${allPass ? "pass" : "fail"}`}>
+        {allPass ? "✓" : "✕"} {run.passed}/{run.total}
+      </span>
+      {run.tokens !== null && (
+        <span className="muted tnum config-cost">
+          {Math.round(run.tokens / 1000)}k tok · {Math.round(run.seconds ?? 0)}s
+        </span>
+      )}
+    </div>
+  );
+}
+
+function AssertionColumn({
+  config,
+  run,
+}: {
+  config: ConfigName;
+  run: NonNullable<EvalData["configs"][ConfigName]>;
+}) {
   return (
     <div className="config-col">
       <h4>
@@ -39,44 +51,21 @@ function ConfigColumn({
           style={{ background: CONFIG_COLORS[config] }}
         />
         {CONFIG_LABELS[config]}
-        <span className={`badge ${allPass ? "pass" : "fail"}`}>
-          {allPass ? "✓" : "✕"} {run.passed}/{run.total}
+        <span className="muted" style={{ marginLeft: "auto", fontSize: 12 }}>
+          {run.passed}/{run.total}
         </span>
-        {run.tokens !== null && (
-          <span className="muted tnum" style={{ fontSize: 12, marginLeft: "auto" }}>
-            {Math.round(run.tokens / 1000)}k tok · {Math.round(run.seconds ?? 0)}s
-          </span>
-        )}
       </h4>
-      <details>
-        <summary>Assertions ({run.assertions.length})</summary>
-        <div>
-          {run.assertions.map((a, i) => (
-            <div key={i} className="assertion">
-              <span className={`mark ${a.passed ? "ok" : "bad"}`}>
-                {a.passed ? "✓" : "✕"}
-              </span>
-              <div>
-                <div>{a.text}</div>
-                <div className="evidence">{a.evidence}</div>
-              </div>
-            </div>
-          ))}
+      {run.assertions.map((a, i) => (
+        <div key={i} className="assertion">
+          <span className={`mark ${a.passed ? "ok" : "bad"}`}>
+            {a.passed ? "✓" : "✕"}
+          </span>
+          <div>
+            <div>{a.text}</div>
+            <div className="evidence">{a.evidence}</div>
+          </div>
         </div>
-      </details>
-      <details>
-        <summary>
-          Outputs ({run.outputs.map((o) => o.name).join(", ") || "none"})
-        </summary>
-        <div>
-          {run.outputs.map((o) => (
-            <div key={o.name}>
-              <div className="file-name mono">{o.name}</div>
-              <pre className="output">{o.content}</pre>
-            </div>
-          ))}
-        </div>
-      </details>
+      ))}
     </div>
   );
 }
@@ -120,48 +109,80 @@ export default function SkillReview({
 
   return (
     <>
-      {evals.map((e) => (
-        <section key={e.dirName} className="card eval-card">
-          <div className="eval-head">
-            <h3>{e.evalName}</h3>
-            <span className="eval-id mono">eval {e.id}</span>
-            {e.plantedDefects.length > 0 && (
-              <span className="badge neutral">
-                {e.plantedDefects.length} planted defects
-              </span>
-            )}
-          </div>
-          <div className="prompt-block">
-            <strong style={{ color: "var(--ink)" }}>Prompt.</strong> {e.prompt}
-          </div>
-          <div className="config-grid">
-            {CONFIGS.filter((c) => e.configs[c]).map((c) => (
-              <ConfigColumn key={c} config={c} run={e.configs[c]} />
-            ))}
-          </div>
-          {e.plantedDefects.length > 0 && (
+      {evals.map((e) => {
+        const present = CONFIGS.filter((c) => e.configs[c]);
+        return (
+          <section key={e.dirName} className="card eval-card">
+            <div className="eval-head">
+              <h3>{e.evalName}</h3>
+              <span className="eval-id mono">eval {e.id}</span>
+              {e.plantedDefects.length > 0 && (
+                <span className="badge neutral">
+                  {e.plantedDefects.length} planted defects
+                </span>
+              )}
+              {e.inputs.length > 0 && (
+                <span className="input-links">
+                  <span className="muted">inputs:</span>
+                  {e.inputs.map((f) => (
+                    <span key={f.path} className="input-link">
+                      <span className="mono">{f.name}</span>
+                      <FileActions path={f.path} label="open" compact />
+                    </span>
+                  ))}
+                </span>
+              )}
+            </div>
+            <div className="prompt-block">
+              <strong style={{ color: "var(--ink)" }}>Prompt.</strong> {e.prompt}
+            </div>
+            <div className="config-strip">
+              {present.map((c) => (
+                <ConfigTile key={c} config={c} run={e.configs[c]!} />
+              ))}
+            </div>
+            <CodeCompare ev={e} />
             <details>
-              <summary>Planted defects ({e.plantedDefects.length})</summary>
-              <ol style={{ fontSize: 13.5, color: "var(--ink-2)" }}>
-                {e.plantedDefects.map((d, i) => (
-                  <li key={i} style={{ marginBottom: 4 }}>
-                    {d}
-                  </li>
+              <summary>
+                Assertions per configuration (
+                {present
+                  .map((c) => {
+                    const r = e.configs[c]!;
+                    return `${r.passed}/${r.total}`;
+                  })
+                  .join(" · ")}
+                )
+              </summary>
+              <div className="config-grid">
+                {present.map((c) => (
+                  <AssertionColumn key={c} config={c} run={e.configs[c]!} />
                 ))}
-              </ol>
+              </div>
             </details>
-          )}
-          <div className="feedback" style={{ marginTop: 12 }}>
-            <textarea
-              placeholder="Feedback for this eval — leave empty if it looks good."
-              value={feedback[e.dirName] ?? ""}
-              onChange={(ev) =>
-                setFeedback({ ...feedback, [e.dirName]: ev.target.value })
-              }
-            />
-          </div>
-        </section>
-      ))}
+            {e.plantedDefects.length > 0 && (
+              <details>
+                <summary>Planted defects ({e.plantedDefects.length})</summary>
+                <ol style={{ fontSize: 13.5, color: "var(--ink-2)" }}>
+                  {e.plantedDefects.map((d, i) => (
+                    <li key={i} style={{ marginBottom: 4 }}>
+                      {d}
+                    </li>
+                  ))}
+                </ol>
+              </details>
+            )}
+            <div className="feedback" style={{ marginTop: 12 }}>
+              <textarea
+                placeholder="Feedback for this eval — leave empty if it looks good."
+                value={feedback[e.dirName] ?? ""}
+                onChange={(ev) =>
+                  setFeedback({ ...feedback, [e.dirName]: ev.target.value })
+                }
+              />
+            </div>
+          </section>
+        );
+      })}
       <div className="submit-bar">
         <button onClick={submit} disabled={busy}>
           {busy ? "Saving..." : "Submit all feedback"}

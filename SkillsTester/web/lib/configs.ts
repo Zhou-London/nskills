@@ -18,6 +18,14 @@ export const CONFIG_LABELS: Record<ConfigName, string> = {
   without_skill: "Baseline (no skill)",
 };
 
+/** Compact labels for chips and column headers, where width is scarce. */
+export const CONFIG_SHORT: Record<ConfigName, string> = {
+  with_skill: "Skill",
+  with_skill_cc1: "CC1",
+  with_skill_cc2: "CC2",
+  without_skill: "Baseline",
+};
+
 export const CONFIG_COLORS: Record<ConfigName, string> = {
   with_skill: "var(--series-1)",
   with_skill_cc1: "var(--series-3)",

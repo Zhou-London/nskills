@@ -10,8 +10,11 @@ home page is the skill selector.
 ```
 web/                        # Next.js UI (port 3117)
   app/                      #   / (skill selector), /skills/<name> (eval review),
-                            #   /skills/<name>/report, /api/feedback/<name>
+                            #   /skills/<name>/report, /api/feedback/<name>,
+                            #   /api/open (opens/diffs workspace files locally)
   lib/data.ts               #   reads everything below straight from disk
+  lib/comments.ts           #   marks comment spans so the viewer can tint them
+  components/CodeCompare.tsx#   the side-by-side output comparison
 python-comments/            # tests for the python-comments skill
   evals/evals.json          # 3 fixed evals (ids 0-2)
   evals/files/              # retry_queue.py (undocumented), session_store.py (11 planted defects)
@@ -50,11 +53,26 @@ npm run start      # serves http://127.0.0.1:3117
 - **Home** — one card per skill (pass-rate meters for both configurations,
   links to review and report). Skills are auto-discovered: any workspace
   subdirectory with `evals/evals.json`.
-- **/skills/&lt;name&gt;** — the test page: every eval with its prompt, side-by-side
-  With-skill / Baseline columns (assertion-level pass/fail with evidence,
-  full output files), the planted-defect list for audit evals, and a feedback
-  box per eval. "Submit all feedback" writes
-  `<skill>/iteration-N/feedback.json`.
+- **/skills/&lt;name&gt;** — the test page (full-width): every eval with its prompt,
+  a compact pass/cost tile per configuration, then the **output comparison** —
+  the same file as written by each tier, in wrapped side-by-side columns with
+  the comments tinted. Below that, assertion-level pass/fail with evidence,
+  the planted-defect list for audit evals, and a feedback box per eval.
+  "Submit all feedback" writes `<skill>/iteration-N/feedback.json`.
+
+  The comparison controls:
+  - **file tabs** — one per output file, plus the eval's input files
+    (selecting an input-only file reveals the *Original* column automatically)
+  - **Comments only** — hides every line that carries no comment, which is the
+    fastest way to see how CC1 and CC2 differ (disabled for prose files)
+  - **Wrap** (on by default) and **Sync scroll**
+  - **column chips** — hide a configuration to give the others more width
+  - **per-column stats** — lines, comment lines, comment density, comment
+    words; total words instead for prose files like `report.md`
+  - **Open / Reveal / Path** and **Open a local diff** — hand the files to the
+    machine serving the UI (`/api/open`, which refuses paths outside the
+    workspace). Diffs prefer `code --diff`, then `cursor`, `bcompare`,
+    `opendiff`, falling back to opening both files.
 - **/skills/&lt;name&gt;/report** — the report page: KPI tiles (pass rates, skill
   lift, token overhead), per-eval pass-rate bars, cost table, analyst notes
   (read from `benchmark.json`).
