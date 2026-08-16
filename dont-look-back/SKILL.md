@@ -34,6 +34,7 @@ Follow these principles whenever you write, modify, or refactor code in this env
 
 - Comments and docstrings describe only what the code currently does and its design intent.
 - Never mention the previous implementation, never explain why the old code was bad, and avoid phrasing like "changed to", "no longer", "replaces X", "previously", or "refactored from".
+- Never correct the past. A comment must not deny or contrast with a state the codebase no longer has — a negation whose only referent is history ("not wire data", "no longer cached", "this is not a singleton") reads as noise to anyone without that history and pollutes the codebase. State the fact positively as a property of the current design ("written by the owning book"). A negation is legitimate only when it forestalls a misreading a fresh reader could form from the current code alone ("not thread-safe", "not owned; caller frees").
 - The code should read as if it was designed this way from the start. Commit messages, and documents whose purpose is describing change (CHANGELOG, release notes, migration guides), may describe the change; source comments may not.
 
 ## 5. Warn the user before large-scale refactors
