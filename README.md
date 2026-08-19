@@ -30,11 +30,13 @@ measures.
 ## SkillsTester
 
 [`SkillsTester/`](SkillsTester/README.md) is a repeatable acceptance-testing
-framework for these skills, with a Next.js web UI for reviewing runs and reading
-reports. Each skill runs two cases (document existing code / document a new
-module) under two configurations (skill loaded vs. no-skill baseline), scored on
-assertion pass rate plus two quality numbers: semantic density (facts per 100
-words of comment prose) and register.
+framework, with a Next.js web UI for reviewing runs and reading reports. It
+covers the two comment skills — the ones whose output is comment prose a run
+can be scored on; `dont-look-back` and `panorama` carry no evals. Each covered
+skill runs two cases (document existing code / document a new module) under two
+configurations (skill loaded vs. no-skill baseline), scored on assertion pass
+rate plus two quality numbers: semantic density (facts per 100 words of comment
+prose) and register.
 
 ```bash
 cd SkillsTester/web

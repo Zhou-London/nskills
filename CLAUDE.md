@@ -37,9 +37,11 @@ unpack one without asking, since that silently activates a skill.
 
 ## Testing a change
 
-Skill edits are validated by a SkillsTester round, not by inspection. The
-workflow is two-phase with a manual gate between them — produce outputs, look at
-them, then score. `SkillsTester/README.md` is the authority; the short version:
+Skill edits are validated by a SkillsTester round, not by inspection, for the
+skills it covers — `cpp-comments` and `python-comments`, the two with an
+`evals/` directory. The workflow is two-phase with a manual gate between them —
+produce outputs, look at them, then score. `SkillsTester/README.md` is the
+authority; the short version:
 
 ```bash
 cd SkillsTester
