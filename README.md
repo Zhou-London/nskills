@@ -2,8 +2,8 @@
 
 <p align="center">
   <img alt="Agent Skills" src="https://img.shields.io/badge/Claude-Agent%20Skills-D97757?logo=anthropic&logoColor=white" />
-  <img alt="Skills: 4" src="https://img.shields.io/badge/skills-4-4c1" />
-  <img alt="Tested with SkillsTester" src="https://img.shields.io/badge/tested-SkillsTester-blue" />
+  <img alt="Skills: 2" src="https://img.shields.io/badge/skills-2-4c1" />
+  <img alt="Scope: developer prose" src="https://img.shields.io/badge/scope-developer%20prose-blue" />
   <img alt="License: MIT" src="https://img.shields.io/badge/license-MIT-yellow" />
 </p>
 
@@ -17,38 +17,67 @@ Code discovers automatically.
 
 | Skill | What it does |
 |---|---|
-| [`cpp-comments`](cpp-comments/SKILL.md) | Google C++ Style Guide rules for comments, plus a density budget — file/class/function/variable comments, the declaration-vs-definition split, `/*param=*/` argument comments, TODO format, professional register, and what *not* to comment. Ships a [review checklist](cpp-comments/references/review-checklist.md). |
-| [`python-comments`](python-comments/SKILL.md) | The same for Python: module/class/function docstrings with Args/Returns/Raises, block and inline comments, prose capped at 2–3 sentences. Ships a [review checklist](python-comments/references/review-checklist.md). |
-| [`dont-look-back`](dont-look-back/SKILL.md) | Design principles for writing and refactoring: no backward compatibility, delete deprecated code outright, design from a global perspective, comments describe only the present and never correct the past, warn before large-scale refactors. |
-| [`panorama`](panorama/) | Panoramic teaching methodology — map before location, gap before definition. Shipped here as a packaged `panorama.skill` bundle rather than an unpacked directory. |
+| [`humandoc`](humandoc/SKILL.md) | Plain-language rules for every piece of developer-facing prose — comments, docstrings, API docs, READMEs, changelogs, error messages, commit messages, PR descriptions. Three laws, one checklist, worked before/after tables. |
+| [`panorama`](panorama/) | Panoramic teaching methodology — map before location, gap before definition. Shipped as a packaged `panorama.skill` bundle rather than an unpacked directory. |
 
-Both comment skills optimize the same objective: **more facts, fewer words** —
-every sentence must carry information a reader could not recover from the code
-itself. That objective is what [`SkillsTester`](SkillsTester/README.md)
-measures.
+## humandoc
 
-## SkillsTester
+One idea runs through the whole skill: **a comment is a precomputed answer.
+Finish the computation; store only the result.**
 
-[`SkillsTester/`](SkillsTester/README.md) is a repeatable acceptance-testing
-framework, with a Next.js web UI for reviewing runs and reading reports. It
-covers the two comment skills — the ones whose output is comment prose a run
-can be scored on; `dont-look-back` and `panorama` carry no evals. Each covered
-skill runs two cases (document existing code / document a new module) under two
-configurations (skill loaded vs. no-skill baseline), scored on assertion pass
-rate plus two quality numbers: semantic density (facts per 100 words of comment
-prose) and register.
+Prose fails when the writer's private context leaks out raw — history notes,
+double negatives, because-chains, insider words, sentences ordered by the
+writer's thought instead of the reader's need. Each leak is unfinished work
+that every later reader has to finish again.
 
-```bash
-cd SkillsTester/web
-npm install        # first time only
-npm run build
-npm run start      # http://127.0.0.1:3117
-```
+The target audience is the **floor reader**: a competent engineer, tired,
+reading English as a second language, holding half the system in their head.
+Prose that reader parses in one pass, every reader parses faster.
 
-See its [README](SkillsTester/README.md) for the round workflow, the scoring
-rubric, and how to add an eval or a new skill.
+| Law | Rule | Example |
+|---|---|---|
+| 1 | Write the state, not the delta | `// This used to return None, but now falls back to [].` → `// Returns [] when no rows match.` |
+| 2 | Put the payload first | `// This function is responsible for parsing the header.` → `// Parses the header.` |
+| 3 | Speak only the shared language | `Only after the flush does the reader see the write.` → `The reader sees the write only after the flush.` |
+
+The skill fires on any request that produces developer prose, including ones
+that never name a style — "add comments", "document this", "update the README".
+It also fires when a refactor leaves existing comments stale.
+
+## Adding a skill
+
+Create `<skill-name>/SKILL.md` with YAML frontmatter (`name`, `description`) and
+a body of short imperative rules. The `description` is the trigger: it decides
+whether the skill fires at all, so it must name the artifacts and phrasings that
+should reach it. Push bulk material into `<skill-name>/references/`, which the
+skill loads on demand. Then update the table above and the skill-count badge.
 
 ## Releases
+
+### 2026-08-22
+
+Three overlapping style skills became one, and the tester that scored them was
+retired with them.
+
+- **`humandoc` replaces `cpp-comments`, `python-comments`, and
+  `dont-look-back`.** The three said the same thing three times, split by
+  language and by topic, so a Python file got Python rules and a README got
+  none. `humandoc` governs every piece of developer-facing prose in any
+  language: comments, docstrings, API docs, READMEs, changelogs, error
+  messages, commit messages, PR descriptions.
+- **Three laws instead of two style guides.** Write the state, not the delta
+  (`dont-look-back`'s rule, generalized past comments). Put the payload first
+  (the front-loaded verb the comment skills asked for, now applied at every
+  scale from a docstring's first line to a README section). Speak only the
+  shared language (plain words, one clause, subject–verb–object, near 15
+  words).
+- **The floor reader replaces the density score.** Semantic density measured
+  facts per 100 words, which rewards compression but says nothing about
+  whether a reader parses the result. The calibration target is now a named
+  reader — tired, second-language, half the system in their head — and the
+  seven-item checklist is what a sentence is scanned against.
+- **`SkillsTester` is gone.** It scored exactly the two skills that no longer
+  exist, and its Next.js review UI, evals, and rubrics went with them.
 
 ### 2026-08-16
 
