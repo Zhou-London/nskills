@@ -31,3 +31,5 @@ coverage/
 Thumbs.db
 
 results/
+# Skills the Claude app syncs here; not part of this repository
+synced/
