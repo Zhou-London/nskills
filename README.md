@@ -2,7 +2,7 @@
 
 <p align="center">
   <img alt="Agent Skills" src="https://img.shields.io/badge/Claude-Agent%20Skills-D97757?logo=anthropic&logoColor=white" />
-  <img alt="Skills: 2" src="https://img.shields.io/badge/skills-2-4c1" />
+  <img alt="Skills: 3" src="https://img.shields.io/badge/skills-3-4c1" />
   <img alt="Scope: developer prose" src="https://img.shields.io/badge/scope-developer%20prose-blue" />
   <img alt="License: MIT" src="https://img.shields.io/badge/license-MIT-yellow" />
 </p>
@@ -18,6 +18,7 @@ Code discovers automatically.
 | Skill | What it does |
 |---|---|
 | [`humandoc`](humandoc/SKILL.md) | Plain-language rules for every piece of developer-facing prose — comments, docstrings, API docs, READMEs, changelogs, error messages, commit messages, PR descriptions. Three laws, one checklist, worked before/after tables. |
+| [`algo-video`](algo-video/SKILL.md) | Makes or revises one episode of a Chinese algorithm-explainer video series from voice recordings. It drives a shared Three.js engine for the animation, adds Tone.js sound, and exports with ffmpeg. |
 | [`panorama`](panorama/) | Panoramic teaching methodology — map before location, gap before definition. Shipped as a packaged `panorama.skill` bundle rather than an unpacked directory. |
 
 ## humandoc
@@ -53,6 +54,13 @@ should reach it. Push bulk material into `<skill-name>/references/`, which the
 skill loads on demand. Then update the table above and the skill-count badge.
 
 ## Releases
+
+### 2026-10-28
+
+- **`algo-video` added.** It turns improvised voice recordings into one
+  episode of the algorithm-explainer video series. The animation follows the
+  voice, and only the audio from the recording goes into the final cut.
+
 
 ### 2026-08-22
 
