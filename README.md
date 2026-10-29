@@ -18,7 +18,7 @@ Code discovers automatically.
 | Skill | What it does |
 |---|---|
 | [`humandoc`](humandoc/SKILL.md) | Plain-language rules for every piece of developer-facing prose — comments, docstrings, API docs, READMEs, changelogs, error messages, commit messages, PR descriptions. Three laws, one checklist, worked before/after tables. |
-| [`algo-video`](algo-video/SKILL.md) | Makes or revises one episode of a Chinese algorithm-explainer video series from voice recordings. It drives a shared Three.js engine for the animation, adds Tone.js sound, and exports with ffmpeg. |
+| [`video-studio`](video-studio/SKILL.md) | Makes or revises a video on any topic from voice recordings. It turns speech into a proofread script, drives a shared Three.js engine for the animation, adds Tone.js sound, and exports with ffmpeg. |
 | [`panorama`](panorama/) | Panoramic teaching methodology — map before location, gap before definition. Shipped as a packaged `panorama.skill` bundle rather than an unpacked directory. |
 
 ## humandoc
@@ -54,6 +54,14 @@ should reach it. Push bulk material into `<skill-name>/references/`, which the
 skill loads on demand. Then update the table above and the skill-count badge.
 
 ## Releases
+
+### 2026-10-29
+
+- **`algo-video` is now `video-studio`.** It works for a video on any topic,
+  not only algorithm episodes. Each video picks its own glossary of terms.
+  After speech recognition, Claude proofreads the script first and marks the
+  words it is unsure of. Then the user checks the script before any cutting
+  starts.
 
 ### 2026-10-28
 
