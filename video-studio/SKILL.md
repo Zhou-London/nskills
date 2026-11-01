@@ -20,6 +20,7 @@ description: Make or revise a video from the user's improvised voice recordings,
 - `glossaries`：选题材术语表，比如 `["算法"]`；`通用` 每期都自动带上。新题材没有合适的表，就建 `engine/glossaries/<题材>.json`（`hotwords` + `fix`）。`hotwords` 写这一期独有的词。
 - 声音：`denoise`（rnnoise / dfn / none）、`denoise_db`（默认 16）、`loudness`（成片目标 LUFS，默认 -14）、`bgm_level`（默认 1.6）、`sfx_level`（默认 0.9）。用户通常在「视频项目」面板里调。
 - 章节卡在 `script/edl.json` 每段的 `card` 里，可有可无；先问用户这一期要不要分章节。
+- `edl.json` 的 `hold`（新一期默认 2 秒）：每段说完后画面停留的时间，让观众看清这一段最后的画面再转场；场景里收尾的元素要显示到 `seg.t1`。
 
 ## 新一期的流程
 1. `ep new "<文件夹>"`，和用户确认标题、题材（选哪个术语表）、要不要系列名和期数，写进 `episode.json`。用户把录屏放进这一期的 `source/`（mov / mp4 / m4a / wav / mp3），按文件名排序就是段落顺序。源文件只读，不改不删。
@@ -59,7 +60,7 @@ description: Make or revise a video from the user's improvised voice recordings,
 - 降噪设置一变，`ep listen / check / draft / final` 会按 `work/voice.json` 自动重新生成人声；按新引擎重新生成人声后片长可能变（剪辑点改按人声检测），动画跟着句子编号走，重跑 `ep check` 就行。
 
 ## 视频项目面板（Claude Code mod）
-- `video-projects` mod：每一期的进度、下一步、声音旋钮（写 episode.json）、在面板里改校对稿和字幕（逐句播放原声）、上下文和用量。源码在 `~/.claude/dev-mods/<会话>/video-projects/`，命令 `/videos`。
+- `video-projects` mod：每一期的进度、下一步、声音旋钮（写 episode.json）、在面板里改校对稿和字幕（逐句播放原声）、上下文和用量。已装成正式插件 `video-projects@local-mods`（本地插件源，直接读 `~/.claude/mods/video-projects/`），命令 `/videos`。改这个文件夹里的代码后要 `/reload-plugins` 才生效；用户要开关就在桌面 App 的 + → Plugins 里，或 `claude plugin disable|enable video-projects@local-mods`。改完先跑 `claude plugin validate` 和 `claude plugin test`。
 - 用户点面板上的按钮会以用户的口吻发来一句话（比如「……的 校对.txt 我校对好了，继续」），照常接着做。
 
 ## 环境
