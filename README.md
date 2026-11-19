@@ -2,7 +2,7 @@
 
 <p align="center">
   <img alt="Agent Skills" src="https://img.shields.io/badge/Claude-Agent%20Skills-D97757?logo=anthropic&logoColor=white" />
-  <img alt="Skills: 3" src="https://img.shields.io/badge/skills-3-4c1" />
+  <img alt="Skills: 4" src="https://img.shields.io/badge/skills-4-4c1" />
   <img alt="Scope: developer prose" src="https://img.shields.io/badge/scope-developer%20prose-blue" />
   <img alt="License: MIT" src="https://img.shields.io/badge/license-MIT-yellow" />
 </p>
@@ -19,6 +19,7 @@ Code discovers automatically.
 |---|---|
 | [`humandoc`](humandoc/SKILL.md) | Plain-language rules for every piece of developer-facing prose — comments, docstrings, API docs, READMEs, changelogs, error messages, commit messages, PR descriptions. Three laws, one checklist, worked before/after tables. |
 | [`video-studio`](video-studio/SKILL.md) | Makes or revises a video on any topic from voice recordings. It turns speech into a proofread script, drives a shared Three.js engine for the animation, adds Tone.js sound, and exports with ffmpeg. |
+| [`nq-daily`](nq-daily/SKILL.md) | Runs the NowQuant daily data pipeline: pulls the missing days of Databento hourly bars with nfetch, loads them into NQLake, exports the mmap file, and runs nqhpc. A helper script sets the download window, so each day is downloaded once. |
 | [`panorama`](panorama/) | Panoramic teaching methodology — map before location, gap before definition. Shipped as a packaged `panorama.skill` bundle rather than an unpacked directory. |
 
 ## humandoc
