@@ -13,7 +13,7 @@ description: Run the NowQuant daily data pipeline end to end — pull new Databe
 | 2 下载 | `build/nfetch download` | `~/Containers/apps/nfetch` | `datasets/XNAS.ITCH/ohlcv-1h/[QQQ/]YYYY-MM-DD.dbn.zst` |
 | 3 转换 | `build/nfetch convert` | 同上 | 同名 `.parquet` |
 | 4 入湖 | `nqlake upload` | `~/Containers/apps/lakehouse` | 表 `market.us_equity_ohlcv` |
-| 5 导出 | `nqlake mmap` | `~/Containers/apps/orderbook` | `~/.nqlake/mmap.arrow` |
+| 5 导出 | `nqlake mmap` | `~/Containers/apps/nqhpc` | `~/.nqlake/mmap.arrow` |
 | 6 计算 | `build/nqhpc run` | 同上 | `out/1h.parquet`、`out/xs.parquet`、`out/instruments.parquet` |
 
 `nqlake` 指 `~/Containers/apps/lakehouse/target/universal/stage/bin/nqlake`，运行前 `export JAVA_HOME=/opt/homebrew/opt/openjdk@21`。
@@ -79,7 +79,7 @@ nqlake upload -y --table us_equity_ohlcv <对应的每个 .parquet>
 ### 5 导出，6 计算
 
 ```bash
-cd ~/Containers/apps/orderbook
+cd ~/Containers/apps/nqhpc
 nqlake mmap -y --sql-file plugins/adapters/nqlake_ohlcv/mmap.sql
 cmake --build build -j
 build/nqhpc run --adapter build/plugins/adapters/nqlake_ohlcv.so \
